@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">GURU2_DSJouju_App</string>
+    <string name="record">녹음</string>
+    <string name="siren">사이렌</string>
+    <string name="bluetooth">블루투스</string>
+    <string name="speaker">스피커</string>
+    <string name="sos_stop">도움요청</string>
+    <string name="keypad">키패드</string>
+
 </resources>
