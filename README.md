@@ -5,3 +5,12 @@
 
 ## How to build
 
+1.
+
+## Credits
+
+: SWU DS 23 _ 공다원, 백채원, 윤서현, 장예서
+
+## Changelog
+- 2024/07/22
+  v.0.0.1
