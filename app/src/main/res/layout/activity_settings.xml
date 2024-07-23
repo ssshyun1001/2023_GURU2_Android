@@ -6,28 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".settings">
+    tools:context=".Settings">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif"
         android:text="설정"
         android:textAlignment="center"
         android:textSize="34sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="24dp"
         android:fontFamily="sans-serif"
         android:text="긴급 연락처"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <!-- 연락처 리스트를 여기에 추가할 수 있도록 준비 -->
 
@@ -35,30 +35,31 @@
         android:id="@+id/contact_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
         android:orientation="vertical"
-        android:visibility="gone"></LinearLayout>
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:visibility="gone">
+    </LinearLayout>
 
     <Button
         android:id="@+id/add_contact_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginStart="24dp"
         android:text="연락처 추가 +"
-        android:textSize="16sp" />
+        android:textSize="16sp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
         android:fontFamily="sans-serif"
         android:text="사이렌 소리"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <RadioGroup
         android:id="@+id/radio_group_siren"
@@ -73,79 +74,90 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="소리 1" />
+            android:text="소리 1"/>
 
         <RadioButton
             android:id="@+id/radio_siren2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="소리 2" />
+            android:text="소리 2"/>
 
         <RadioButton
             android:id="@+id/radio_siren3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="소리 3" />
+            android:text="소리 3"/>
     </RadioGroup>
 
-    <Button
-        android:id="@+id/siren_act_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:text="TEST"
-        android:textSize="16sp" />
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/siren_apply_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="적용"
+            android:textSize="16sp"/>
+        <Button
+            android:id="@+id/siren_act_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TEST"
+            android:textSize="16sp"/>
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
         android:fontFamily="sans-serif"
         android:text="위치 기록 주기"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <Spinner
         android:id="@+id/spinner_location_update_frequency"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:minWidth="48dp"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="8dp"/>
 
     <Button
         android:id="@+id/message_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
-        android:baselineAligned="false"
+        android:layout_marginStart="24dp"
         android:text="메세지 내용"
-        android:textSize="16sp" />
+        android:textSize="16sp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
         android:fontFamily="sans-serif"
         android:text="SOS 이력 관리"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <Button
         android:id="@+id/sos_del_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginStart="24dp"
         android:text="삭제"
-        android:textSize="16sp" />
+        android:textSize="16sp"/>
 
 </LinearLayout>

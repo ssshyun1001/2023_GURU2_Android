@@ -27,6 +27,9 @@
         android:theme="@style/Theme.GURU2_DSJouju_App"
         tools:targetApi="34">
         <activity
+            android:name=".Settings"
+            android:exported="false" />
+        <activity
             android:name=".menu"
             android:exported="false" />
         <activity
