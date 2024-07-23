@@ -10,18 +10,22 @@
 
 (향후 설명 추가)
 
+<br>
+<br>
 
 ## How to build
 
 1.
 
-***
+<br>
+<br>
 
 ## Credits
 
 : SWU DS 23 _ 공다원, 백채원, 윤서현, 장예서(팀장)
 
-***
+<br>
+<br>
 
 ## Changelog
 - <code>2024/07/24</code>
@@ -34,7 +38,7 @@
 
   gradle 내부 mediarouter implementation 오류 수정 및 일부 라이브러리 버전업
 
-
+<br>
 
 - <code>2024/07/23</code>
 
@@ -42,7 +46,7 @@
   
   settings 화면 업데이트 및 sendMessage 클래스 초기 구현
 
-
+<br>
 
 - <code>2024/07/22</code>
 
