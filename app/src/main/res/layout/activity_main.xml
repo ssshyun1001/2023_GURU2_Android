@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,13 +8,99 @@
     tools:context=".MainActivity"
     tools:ignore="MissingClass">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/top_buttons"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:padding="10dp"
+        android:gravity="center">
 
-</LinearLayout>
+        <Button
+            android:id="@+id/policeStation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="경찰서" />
+
+        <Button
+            android:id="@+id/convenientStore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="편의점" />
+
+        <Button
+            android:id="@+id/cctv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="cctv" />
+
+        <ImageButton
+            android:id="@+id/button_calling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_call_24"
+            android:contentDescription="@string/button_calling"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_below="@id/top_buttons"
+        android:layout_above="@id/bottom_buttons">
+
+        <!-- Replace with actual map view once API is integrated -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Map goes here"
+            android:gravity="center"
+            android:background="#e0e0e0"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/button_siren"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_call_24"
+            android:contentDescription="@string/button_siren"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
+
+        <ImageButton
+            android:id="@+id/run_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_call_24"
+            android:contentDescription="@string/run_button"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
+
+        <ImageButton
+            android:id="@+id/button_sos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_call_24"
+            android:contentDescription="@string/button_sos"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
+    </LinearLayout>
+
+</RelativeLayout>
