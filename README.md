@@ -15,6 +15,7 @@
 - 2024/07/23
 
   call, soshistory, settings 화면 초기 구현
+  
   settings 화면 업데이트 및 sendMessage 클래스 초기 구현
 
 
