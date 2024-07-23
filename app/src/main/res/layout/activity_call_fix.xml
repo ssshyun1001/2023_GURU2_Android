@@ -1,0 +1,130 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="ExtraText">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/text_call_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="25dp"
+            android:padding="10dp"
+            android:text="00:00"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/text_contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_call_timer"
+            android:layout_centerHorizontal="true"
+
+            android:layout_marginTop="25dp"
+            android:text="아빠"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/text_contact_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_contact_name"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="151dp"
+            android:text="010-1234-5678"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_constraintBottom_toBottomOf="parent"
+            android:layout_constraintEnd_toEndOf="parent"
+            android:layout_constraintStart_toStartOf="parent"
+            android:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="144dp"
+            android:layout_marginBottom="84dp"
+            android:src="@drawable/baseline_call_24"
+            android:text="전화걸기/끊기"
+            tools:layout_editor_absoluteX="70dp"
+            tools:layout_editor_absoluteY="60dp" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="280dp"
+            android:columnCount="3"
+            android:padding="50dp"
+            android:rowCount="2">
+
+            <ImageButton
+                android:id="@+id/button_record"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:contentDescription="@string/record"
+                android:src="@drawable/baseline_record_24" />
+
+            <ImageButton
+                android:id="@+id/button_siren"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:contentDescription="@string/siren"
+                android:src="@drawable/baseline_siren_24" />
+
+            <ImageButton
+                android:id="@+id/button_bluetooth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:contentDescription="@string/bluetooth"
+                android:src="@drawable/baseline_bluetooth_24" />
+
+            <ImageButton
+                android:id="@+id/button_speaker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:contentDescription="@string/speaker"
+                android:src="@drawable/baseline_speaker_24" />
+
+            <ImageButton
+                android:id="@+id/button_sos_stop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:contentDescription="@string/sos_stop"
+                android:src="@drawable/baseline_sos_24" />
+
+            <ImageButton
+                android:id="@+id/button_keypad"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:contentDescription="@string/keypad"
+                android:src="@drawable/baseline_keypad_24" />
+
+        </GridLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
