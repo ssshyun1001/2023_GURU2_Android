@@ -1,18 +1,30 @@
-# 🚶‍♀️ 안전한 귀갓길을 위해 : 지켜주길 🚶‍♀️
+# 🚶‍♀️ 안전한 귀갓길을 위해 : 지켜주길 🚶‍♀️ 
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Android Studio](https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white)
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)
 
 본 안드로이드 어플리케이션 프로젝트는 SWU GURU2 안드로이드 분반의 5조, 데사쥬쥬팀의 해커톤 프로젝트입니다.
+
+** 귀갓길에 안심을 더하다, 지켜주길
+
+(향후 설명 추가)
 
 
 ## How to build
 
 1.
 
+***
+
 ## Credits
 
 : SWU DS 23 _ 공다원, 백채원, 윤서현, 장예서(팀장)
 
+***
+
 ## Changelog
-- 2024/07/24
+- <code>2024/07/24</code>
 
   main 초기 구현, soshistory 화면 구현
 
@@ -24,7 +36,7 @@
 
 
 
-- 2024/07/23
+- <code>2024/07/23</code>
 
   call, soshistory, settings 화면 초기 구현
   
@@ -32,7 +44,7 @@
 
 
 
-- 2024/07/22
+- <code>2024/07/22</code>
 
   프로젝트 생성
 
