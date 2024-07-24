@@ -26,6 +26,15 @@ class Settings : AppCompatActivity() {
 
     private lateinit var spinner: Spinner
 
+    private lateinit var editTextSosMessage: EditText
+    private lateinit var sosMessageTextView: TextView
+    private lateinit var sosInitButton: Button
+    private lateinit var sosEditButton: Button
+    private lateinit var sosSaveButton: Button
+
+    private var isEditing = false
+    private var originalSosMessage: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -35,25 +44,39 @@ class Settings : AppCompatActivity() {
 
         // UI 요소 초기화
         setoptionmenubtn = findViewById(R.id.set_option_menu_btn)
+
         addContactButton = findViewById(R.id.add_contact_button)
         contactListLayout = findViewById(R.id.contact_list)
+
         radioGroup = findViewById(R.id.radio_group_siren)
         applyButton = findViewById(R.id.siren_apply_button)
         testButton = findViewById(R.id.siren_act_button)
+
         spinner = findViewById(R.id.spinner_location_update_frequency)
+
+        editTextSosMessage = findViewById(R.id.edit_text_sosmessage)
+        sosMessageTextView = findViewById(R.id.sos_message_text_view)
+        sosInitButton = findViewById(R.id.sos_init_button)
+        sosEditButton = findViewById(R.id.sos_edit_button)
+        sosSaveButton = findViewById(R.id.sos_save_button)
 
         // 저장된 상태 로드
         loadContactNumbers()
         loadRadioButtonState()
+        loadSosMessage()
 
         // Spinner 설정
         setupSpinner()
 
         // 버튼 관련 listener 설정
+        setoptionmenubtn.setOnClickListener { showPopupMenu(it) }
         addContactButton.setOnClickListener { showAddContactDialog() }
         applyButton.setOnClickListener { saveRadioButtonState() }
         testButton.setOnClickListener { testSelectedSiren() }
-        setoptionmenubtn.setOnClickListener { showPopupMenu(it) }
+
+        sosInitButton.setOnClickListener { resetSosMessage() }
+        sosEditButton.setOnClickListener { toggleEditMode() }
+        sosSaveButton.setOnClickListener { saveSosMessage() }
     }
 
     // 팝업 메뉴
@@ -211,5 +234,63 @@ class Settings : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.putString("spinner_selection", selection)
         editor.apply()
+    }
+
+    // SOS 메세지 초기화
+    private fun resetSosMessage() {
+        val defaultMessage = "SOS 메시지, 지금 사용자가 위험한 상황이에요. 도와주세요!"
+        sosMessageTextView.text = defaultMessage
+        editTextSosMessage.setText(defaultMessage)
+
+        val editor = sharedPreferences.edit()
+        editor.putString("sos_message", defaultMessage)
+        editor.apply()
+    }
+
+    private fun toggleEditMode() {
+        if (isEditing) {
+            // 취소 버튼을 눌렀을 때
+            sosMessageTextView.visibility = View.VISIBLE
+            editTextSosMessage.visibility = View.GONE
+            sosSaveButton.visibility = View.GONE
+            sosEditButton.text = "수정"
+
+            // 수정 전 메세지로 돌아가기
+            editTextSosMessage.setText(originalSosMessage)
+        } else {
+            // 수정 버튼을 눌렀을 때
+            originalSosMessage = sosMessageTextView.text.toString()
+            sosMessageTextView.visibility = View.GONE
+            editTextSosMessage.visibility = View.VISIBLE
+            sosSaveButton.visibility = View.VISIBLE
+            sosEditButton.text = "취소"
+        }
+        isEditing = !isEditing
+    }
+
+    // 사용자 입력 SOS 메세지 SharedPreferences 통해 저장
+    private fun saveSosMessage() {
+        val sosMessage = editTextSosMessage.text.toString()
+
+        val editor = sharedPreferences.edit()
+        editor.putString("sos_message", sosMessage)
+        editor.apply()
+
+        Toast.makeText(this, "SOS 메시지가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+
+        // 변경 사항 저장 후 텍스트 뷰로 돌아가기
+        sosMessageTextView.text = sosMessage
+
+        // 저장 후 originalSosMessage 업데이트
+        originalSosMessage = sosMessage
+
+        toggleEditMode()
+    }
+
+    // SharedPreferences 통해 저장한 메세지 내용 로드
+    private fun loadSosMessage() {
+        val savedMessage = sharedPreferences.getString("sos_message", "SOS 메시지, 지금 사용자가 위험한 상황이에요. 도와주세요!")
+        sosMessageTextView.text = savedMessage
+        editTextSosMessage.setText(savedMessage)
     }
 }

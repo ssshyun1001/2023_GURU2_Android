@@ -166,29 +166,67 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="sans-serif"
-                android:text="메세지 내용"
+                android:text="SOS 메세지 설정"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sos_message_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginEnd="36dp"
+                android:textSize="16sp"/>
 
             <EditText
                 android:id="@+id/edit_text_sosmessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
                 android:hint="SOS 메세지"
                 android:inputType="textMultiLine"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:visibility="gone"/>
 
-            <Button
-                android:id="@+id/sos_save_button"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="24dp"
-                android:text="저장"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/sos_init_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="초기화"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/sos_edit_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="수정"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/sos_save_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="저장"
+                    android:textSize="16sp" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
