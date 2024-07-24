@@ -1,4 +1,4 @@
-package com.example.myapp
+package com.example.guru2_dsjouju_app;
 
 import android.Manifest
 import android.content.pm.PackageManager
