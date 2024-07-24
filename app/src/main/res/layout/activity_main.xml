@@ -79,8 +79,17 @@
             android:id="@+id/button_siren"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_call_24"
+            android:src="@drawable/baseline_siren_24"
             android:contentDescription="@string/button_siren"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
+
+        <ImageButton
+            android:id="@+id/button_sos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_sos_24"
+            android:contentDescription="@string/sos_history"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"/>
 
@@ -89,16 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_call_24"
-            android:contentDescription="@string/run_button"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"/>
-
-        <ImageButton
-            android:id="@+id/button_sos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_call_24"
-            android:contentDescription="@string/button_sos"
+            android:contentDescription="@string/button_calling"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"/>
     </LinearLayout>

@@ -5,6 +5,7 @@
     <string name="sos_history">SOS 이력</string>
     <string name="settings">설정</string>
     <string name="button_calling">전화</string>
+    <string name="button_siren">사이렌</string>
     <string name="record">녹음</string>
     <string name="siren">사이렌</string>
     <string name="bluetooth">블루투스</string>
