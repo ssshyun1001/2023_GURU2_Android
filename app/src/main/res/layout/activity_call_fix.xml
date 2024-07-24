@@ -72,7 +72,7 @@
             <ImageButton
                 android:id="@+id/button_record"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:contentDescription="@string/record"
@@ -81,7 +81,7 @@
             <ImageButton
                 android:id="@+id/button_siren"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:contentDescription="@string/siren"
@@ -90,7 +90,7 @@
             <ImageButton
                 android:id="@+id/button_bluetooth"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:contentDescription="@string/bluetooth"
@@ -99,7 +99,7 @@
             <ImageButton
                 android:id="@+id/button_speaker"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:contentDescription="@string/speaker"
@@ -108,7 +108,7 @@
             <ImageButton
                 android:id="@+id/button_sos_stop"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:contentDescription="@string/sos_stop"
@@ -117,7 +117,7 @@
             <ImageButton
                 android:id="@+id/button_keypad"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:contentDescription="@string/keypad"
