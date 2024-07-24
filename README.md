@@ -32,16 +32,28 @@
 <br>
 
 ## Changelog
+- <code>2024/07/25</code>
+
+  설정 기초 기능 구현 완료
+
+<br>
+
 - <code>2024/07/24</code>
 
-  main 초기 구현, soshistory 화면 구현
+  MainActivity 내부 권한 설정 코드 수정
 
-  menu 설정 구현
+  지도 클래스 추가 (xml 수정)
 
-  오타/오류 수정, 긴급 연락처 추가/삭제, 사이렌 선택, 위치기록주기 설정
+  메뉴 및 레이아웃 구현 진행
 
-  gradle 내부 mediarouter implementation 오류 수정 및 일부 라이브러리 버전업
+  컬러 추가
 
+  SOS 이력 화면 및 메뉴 제거
+
+  홈·설정 화면 팝업 메뉴 버튼 및 화면 전환 기능 추가
+
+  경찰서 DB 생성 클래스
+    
 <br>
 
 - <code>2024/07/23</code>
@@ -49,6 +61,12 @@
   call, soshistory, settings 화면 초기 구현
   
   settings 화면 업데이트 및 sendMessage 클래스 초기 구현
+
+  main 초기 구현, soshistory 화면 구현, menu 설정 구현
+
+  오타/오류 수정, 긴급 연락처 추가/삭제, 사이렌 선택, 위치기록주기 설정
+
+  gradle 내부 mediarouter implementation 오류 수정 및 일부 라이브러리 버전업
 
 <br>
 
