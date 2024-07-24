@@ -43,9 +43,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.mediarouter)
+    implementation(libs.gson) // Gson 의존성 추가
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(kotlin("script-runtime"))
-    implementation("com.google.code.gson:gson:2.8.8")
 }

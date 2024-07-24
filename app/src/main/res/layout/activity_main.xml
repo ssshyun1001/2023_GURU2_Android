@@ -39,13 +39,12 @@
             android:text="cctv" />
 
         <ImageButton
-            android:id="@+id/button_calling"
+            android:id="@+id/home_option_menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_call_24"
-            android:contentDescription="@string/button_calling"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:src="@drawable/baseline_menu_24" />
 
     </LinearLayout>
 
@@ -53,7 +52,6 @@
         android:id="@+id/map_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_below="@id/top_buttons"
         android:layout_above="@id/bottom_buttons">
 
@@ -79,8 +77,17 @@
             android:id="@+id/button_siren"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_call_24"
+            android:src="@drawable/baseline_siren_24"
             android:contentDescription="@string/button_siren"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
+
+        <ImageButton
+            android:id="@+id/button_sos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_sos_24"
+            android:contentDescription="@string/sos_history"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"/>
 
@@ -89,16 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_call_24"
-            android:contentDescription="@string/run_button"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"/>
-
-        <ImageButton
-            android:id="@+id/button_sos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_call_24"
-            android:contentDescription="@string/button_sos"
+            android:contentDescription="@string/button_calling"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"/>
     </LinearLayout>

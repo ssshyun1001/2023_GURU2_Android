@@ -2,14 +2,18 @@ package com.example.guru2_dsjouju_app
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 
 class Settings : AppCompatActivity() {
+
+    lateinit var setoptionmenubtn: Button
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -30,6 +34,7 @@ class Settings : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("SirenPrefs", Context.MODE_PRIVATE)
 
         // UI 요소 초기화
+        setoptionmenubtn = findViewById(R.id.set_option_menu_btn)
         addContactButton = findViewById(R.id.add_contact_button)
         contactListLayout = findViewById(R.id.contact_list)
         radioGroup = findViewById(R.id.radio_group_siren)
@@ -37,7 +42,7 @@ class Settings : AppCompatActivity() {
         testButton = findViewById(R.id.siren_act_button)
         spinner = findViewById(R.id.spinner_location_update_frequency)
 
-        // 저장된 상태 로드ㄴ
+        // 저장된 상태 로드
         loadContactNumbers()
         loadRadioButtonState()
 
@@ -48,6 +53,37 @@ class Settings : AppCompatActivity() {
         addContactButton.setOnClickListener { showAddContactDialog() }
         applyButton.setOnClickListener { saveRadioButtonState() }
         testButton.setOnClickListener { testSelectedSiren() }
+        setoptionmenubtn.setOnClickListener { showPopupMenu(it) }
+    }
+
+    // 팝업 메뉴
+    private fun showPopupMenu(view: android.view.View) {
+        val popup = PopupMenu(this, view)
+        popup.menuInflater.inflate(R.menu.menu_settings, popup.menu)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_home -> {
+                    // 홈 항목 클릭 시 MainActivity로 이동
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.action_call -> {
+                    // 전화 받기 항목 클릭 시 MainActivity로 이동
+                    //val intent = Intent(this, MainActivity::class.java)
+                    //startActivity(intent)
+                    true
+                }
+                R.id.action_tutorial -> {
+                    // 사용법 항목 클릭 시 MainActivity로 이동
+                    //val intent = Intent(this, MainActivity::class.java)
+                    //startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
     }
 
     // 연락처 추가 팝업 표시
@@ -147,7 +183,7 @@ class Settings : AppCompatActivity() {
 
     // 스피너 항목 설정 및 변경값 저장 실행
     private fun setupSpinner() {
-        val frequencies = listOf("3분", "5분", "10분")
+        val frequencies = listOf("1분", "2분", "3분", "4분", "5분")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, frequencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
