@@ -74,6 +74,7 @@ class MapManager(private val context: Context, private val webView: WebView) {
 
 data class PoliceStation(
     val name: String,
+    val address: String,
     val latitude: Double,
     val longitude: Double
 )
