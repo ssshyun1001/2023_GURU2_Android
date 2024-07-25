@@ -1,15 +1,17 @@
 package com.example.guru2_dsjouju_app;
 
 import android.Manifest
+import com.example.guru2_dsjouju_app.R
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
+
 
 class MainActivity : AppCompatActivity() {
 
