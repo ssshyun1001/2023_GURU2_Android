@@ -145,7 +145,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="sans-serif"
-                android:text="위치 기록 주기"
+                android:text="위치 전송 주기"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
