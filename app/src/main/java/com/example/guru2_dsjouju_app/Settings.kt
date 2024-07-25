@@ -238,7 +238,7 @@ class Settings : AppCompatActivity() {
 
     // SOS 메세지 초기화
     private fun resetSosMessage() {
-        val defaultMessage = "SOS 메시지, 지금 사용자가 위험한 상황이에요. 도와주세요!"
+        val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
         sosMessageTextView.text = defaultMessage
         editTextSosMessage.setText(defaultMessage)
 
@@ -289,7 +289,7 @@ class Settings : AppCompatActivity() {
 
     // SharedPreferences 통해 저장한 메세지 내용 로드
     private fun loadSosMessage() {
-        val savedMessage = sharedPreferences.getString("sos_message", "SOS 메시지, 지금 사용자가 위험한 상황이에요. 도와주세요!")
+        val savedMessage = sharedPreferences.getString("sos_message", "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!")
         sosMessageTextView.text = savedMessage
         editTextSosMessage.setText(savedMessage)
     }
