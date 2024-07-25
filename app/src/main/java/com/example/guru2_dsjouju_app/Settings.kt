@@ -91,12 +91,6 @@ class Settings : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
-                R.id.action_call -> {
-                    // 전화 받기 항목 클릭 시 MainActivity로 이동
-                    //val intent = Intent(this, MainActivity::class.java)
-                    //startActivity(intent)
-                    true
-                }
                 R.id.action_tutorial -> {
                     // 사용법 항목 클릭 시 MainActivity로 이동
                     //val intent = Intent(this, MainActivity::class.java)

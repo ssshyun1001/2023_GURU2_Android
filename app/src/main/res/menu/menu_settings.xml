@@ -8,11 +8,6 @@
         android:title="@string/action_home"
         app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
         tools:icon="@drawable/mr_button_light" />
-    <item
-        android:id="@+id/action_call"
-        android:title="@string/action_call"
-        app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
-        tools:icon="@drawable/mr_button_light" />
 
     <item
         android:id="@+id/action_tutorial"
