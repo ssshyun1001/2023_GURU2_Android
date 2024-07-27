@@ -26,5 +26,6 @@
             android:text="아 빠"
             android:textSize="40sp"
             tools:ignore="UnknownIdInLayout" />
+    </RelativeLayout>
 
 </RelativeLayout>

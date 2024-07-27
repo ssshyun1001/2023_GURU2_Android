@@ -5,12 +5,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
+import com.example.android3.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,10 +46,11 @@ class MainActivity : AppCompatActivity() {
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()
     }
+    }
 
     // 팝업 메뉴
     private fun showPopupMenu(view: android.view.View) {
-        val popup = PopupMenu(this, view)
+        val popup = PopupMenu(view.context, view)
         popup.menuInflater.inflate(R.menu.menu_main, popup.menu)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -60,11 +62,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.settings -> {
                     // 설정 항목 클릭 시 Settings로 이동
-                    val intent = Intent(this, Settings::class.java)
-                    startActivity(intent)
+                    //val intent = Intent(view.context, Settings::class.java)
+                    //startActivity(intent)
                     true
                 }
-                else -> false
+            else -> false
             }
         }
         popup.show()
@@ -92,4 +94,3 @@ class MainActivity : AppCompatActivity() {
             requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         }
     }
-}

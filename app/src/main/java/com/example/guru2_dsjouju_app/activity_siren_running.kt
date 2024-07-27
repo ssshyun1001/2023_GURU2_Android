@@ -4,6 +4,7 @@ package com.example.guru2_dsjouju_siren
 import SoundPlayer
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Button
@@ -11,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.android3.R
 import com.example.guru2_dsjouju_app.R
 
 class Siren_running : AppCompatActivity() {
@@ -25,6 +27,7 @@ class Siren_running : AppCompatActivity() {
     private var buttonPressStartTime: Long = 0
     private val pressDurationMs: Long = 3000 // 3초
     private lateinit var soundPlayer: SoundPlayer
+    private lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +40,10 @@ class Siren_running : AppCompatActivity() {
         sosButton = findViewById(R.id.sosButton)
 
 
-        soundPlayer = SoundPlayer(this, R.raw.siren_sound) //사이렌 사운드 추가해야함
+        // Load saved sound and initialize SoundPlayer
+        val savedSound = sharedPreferences.getInt("selected_sound", -1)
+        soundPlayer = SoundPlayer(this, savedSound)
+
         // 초기 상태 설정
         updateSirenStatus()
         updateSosStatus()
