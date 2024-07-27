@@ -3,6 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/android_calling" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,7 +23,9 @@
             android:layout_marginBottom="25dp"
             android:padding="10dp"
             android:text="00:00"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:drawableStart="@drawable/baseline_call_24"
+            android:drawablePadding="10dp"/>
 
         <TextView
             android:id="@+id/text_contact_name"
@@ -27,7 +36,8 @@
 
             android:layout_marginTop="25dp"
             android:text="아빠"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_contact_number"
@@ -36,24 +46,30 @@
             android:layout_below="@id/text_contact_name"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="151dp"
-            android:text="010-1234-5678"
+            android:layout_marginEnd="115dp"
+            android:text="휴대전화  010-1234-5678"
             android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="144dp"
-            android:layout_marginBottom="84dp"
-            android:src="@drawable/baseline_call_24"
-            android:text="전화걸기/끊기"
-            tools:layout_editor_absoluteX="70dp"
-            tools:layout_editor_absoluteY="60dp" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="361dp"
+            android:layout_alignTop="@+id/gridLayout"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/semi_background" />
+
+        <ImageButton
+            android:layout_width="84dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="530dp"
+            android:layout_marginStart="165dp"
+            android:src="@drawable/app_icon_hangup2"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:background="@null" />
 
         <GridLayout
+            android:id="@+id/gridLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -117,7 +133,5 @@
                 android:src="@drawable/baseline_keypad_24" />
 
         </GridLayout>
-
     </RelativeLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
