@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/android_calling" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/text_contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_call_timer"
+            android:layout_centerHorizontal="true"
+
+            android:layout_marginTop="60dp"
+            android:text="아 빠"
+            android:textSize="40sp"
+            tools:ignore="UnknownIdInLayout" />
+
+</RelativeLayout>
