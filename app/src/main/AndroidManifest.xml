@@ -33,6 +33,8 @@
             android:name=".Settings"
             android:exported="false" />
 
+        <activity android:name=".CallActivity"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

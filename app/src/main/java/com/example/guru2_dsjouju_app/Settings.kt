@@ -45,6 +45,7 @@ class Settings : AppCompatActivity() {
         val policeSiren :Button = findViewById(R.id.radio_siren1)
         val fireTrucksSiren: Button = findViewById(R.id.radio_siren2)
         val AmbulanceSiren: Button = findViewById(R.id.radio_siren3)
+        val callButton: Button = findViewById(R.id.action_call)
 
         // 버튼 클릭 시 소리 설정
         policeSiren.setOnClickListener { selectedSound = R.raw.police_siren }
@@ -90,6 +91,13 @@ class Settings : AppCompatActivity() {
         sosInitButton.setOnClickListener { resetSosMessage() }
         sosEditButton.setOnClickListener { toggleEditMode() }
         sosSaveButton.setOnClickListener { saveSosMessage() }
+
+        // 전화 걸기 버튼 리스너 설정
+        callButton.setOnClickListener {
+            val intent = Intent(this, CallActivity::class.java)
+            startActivity(intent)
+        }
+    }
     }
 
     // 팝업 메뉴
