@@ -16,16 +16,60 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/text_call_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:padding="10dp"
+            android:text="수신전화"
+            android:textSize="20sp" />
+
+        <TextView
             android:id="@+id/text_contact_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_call_timer"
             android:layout_centerHorizontal="true"
-
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="10dp"
             android:text="아 빠"
-            android:textSize="40sp"
+            android:textSize="35sp"
+            android:textStyle="bold"
             tools:ignore="UnknownIdInLayout" />
+
+        <TextView
+            android:id="@+id/text_contact_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_contact_name"
+            android:layout_marginStart="120dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="100dp"
+            android:text="휴대전화 010-1234-5678"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:layout_width="84dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="500dp"
+            android:layout_marginStart="65dp"
+            android:src="@drawable/app_icon_pickup"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:background="@null" />
+
+        <ImageButton
+            android:layout_width="84dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="500dp"
+            android:layout_marginStart="260dp"
+            android:src="@drawable/app_icon_hangup2"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:background="@null" />
+
+
     </RelativeLayout>
 
 </RelativeLayout>
