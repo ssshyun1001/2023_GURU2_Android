@@ -27,8 +27,12 @@
         android:theme="@style/Theme.GURU2_DSJouju_App"
         tools:targetApi="34">
         <activity
+            android:name="com.example.guru2_dsjouju_siren.Siren_running"
+            android:exported="false" />
+        <activity
             android:name=".Settings"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

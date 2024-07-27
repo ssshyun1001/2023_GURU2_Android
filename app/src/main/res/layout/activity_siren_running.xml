@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/sirenStatusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="129dp"
+        android:layout_marginEnd="136dp"
+        android:text="사이렌 상태: 꺼짐"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/toggleSirenButton"
+        android:layout_width="342dp"
+        android:layout_height="276dp"
+        android:layout_below="@id/sirenStatusText"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="33dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/app_icon_siren" />
+
+    <Button
+        android:id="@+id/sosButton"
+        android:layout_width="110dp"
+        android:layout_height="72dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="134dp"
+        android:layout_marginBottom="41dp"
+        android:background="@drawable/app_icon_sos_o" />
+
+
+</RelativeLayout>
