@@ -6,7 +6,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.guru2_dsjouju_app.R
 
-class CallActivity : AppCompatActivity() {
+class Call_activity : AppCompatActivity() {
 
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var stopButton: Button
