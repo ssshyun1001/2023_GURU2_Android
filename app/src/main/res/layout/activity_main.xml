@@ -82,17 +82,16 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="10dp"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/button_sos"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/baseline_sos_24"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/sos_history"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/app_icon_sos_x"
             android:padding="10dp"/>
 
         <ImageButton
-            android:id="@+id/run_button"
+            android:id="@+id/button_call"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/baseline_call_24"

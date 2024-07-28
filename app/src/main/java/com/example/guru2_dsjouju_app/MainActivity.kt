@@ -5,8 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -18,18 +20,30 @@ class MainActivity : AppCompatActivity() {
     // 권한 요청 코드 상수
     private val PERMISSION_REQUEST_CODE = 100
 
-    lateinit var homeoptionmenubtn: Button
-    lateinit var buttonSos: ImageButton
+    private lateinit var homeoptionmenubtn: Button
 
-    @SuppressLint("WrongViewCast")
+    private lateinit var sosManager: SosManager
+    private lateinit var sosButton: Button
+
+    private var countdownTimer: CountDownTimer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        buttonSos = findViewById(R.id.button_sos)
         homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
 
+        sosButton = findViewById(R.id.button_sos)
+        sosButton.setBackgroundResource(R.drawable.app_icon_sos_x)
+
         homeoptionmenubtn.setOnClickListener { showPopupMenu(it) }
+
+        sosManager = SosManager(this, sosButton)
+        sosButton.setOnClickListener { sosManager.showSosDialog() }
+        sosButton.setOnLongClickListener {
+            sosManager.handleLongPress()
+            true
+        }
 
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()

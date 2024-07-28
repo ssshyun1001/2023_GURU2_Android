@@ -4,7 +4,7 @@
     <string name="action_home">홈</string>
     <string name="action_call">전화 받기</string>
     <string name="action_tutorial">사용법</string>
-    <string name="sos_history">※※※※※</string>
+    <string name="sos_history">SOS</string>
     <string name="settings">설정</string>
     <string name="button_calling">전화</string>
     <string name="button_siren">사이렌</string>
