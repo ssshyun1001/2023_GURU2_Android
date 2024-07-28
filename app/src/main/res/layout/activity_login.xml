@@ -61,14 +61,12 @@
 
     <Button
         android:id="@+id/buttonSignUp"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="155dp"
+        android:layout_marginStart="145dp"
         android:layout_marginTop="470dp"
-        android:text="회원가입 Sign Up"
-        android:textColor="#FFFFFF"
-        android:background="@android:color/holo_green_dark"
+        android:layout_weight="1"
         android:padding="8dp"
+        android:text="회원가입 Sign Up"
         android:textSize="12dp" />
 </FrameLayout>
