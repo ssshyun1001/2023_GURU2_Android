@@ -31,7 +31,7 @@ import java.io.IOException
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
-    private lateinit var zoomControls: ZoomControls
+    //private lateinit var zoomControls: ZoomControls
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
 
@@ -91,7 +91,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12.0f))
 
         // Zoom 컨트롤 설정
-        setupZoomControls()
+        // setupZoomControls()
     }
 
     // Implement the onMarkerClick method to handle marker clicks
@@ -103,6 +103,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         return false
     }
 
+    /*
     private fun setupZoomControls() {
         zoomControls.setOnZoomInClickListener {
             mMap.animateCamera(CameraUpdateFactory.zoomIn())
@@ -112,6 +113,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             mMap.animateCamera(CameraUpdateFactory.zoomOut())
         }
     }
+     */
 
     private fun addPoliceStationMarkers() {
         // 경찰서 데이터 리스트
