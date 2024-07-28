@@ -4,15 +4,12 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat.startActivity
-import com.example.guru2_dsjouju_app.R
 
 class Settings : AppCompatActivity() {
 
@@ -37,22 +34,10 @@ class Settings : AppCompatActivity() {
 
     private var isEditing = false
     private var originalSosMessage: String = ""
-    private var selectedSound: Int = -1 // 초기화되지 않은 상태를 표시
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
-        val policeSiren :Button = findViewById(R.id.radio_siren1)
-        val fireTrucksSiren: Button = findViewById(R.id.radio_siren2)
-        val AmbulanceSiren: Button = findViewById(R.id.radio_siren3)
-        val callButton: Button = findViewById(R.id.action_call)
-
-        // 버튼 클릭 시 소리 설정
-        policeSiren.setOnClickListener { selectedSound = R.raw.police_siren }
-        fireTrucksSiren.setOnClickListener { selectedSound = R.raw.fire_trucks_siren }
-        AmbulanceSiren.setOnClickListener { selectedSound = R.raw.ambulance_siren }
-        applyButton = findViewById(R.id.siren_apply_button)
 
         // SharedPreferences(:설정 상태 저장) 초기화
         sharedPreferences = getSharedPreferences("SirenPrefs", Context.MODE_PRIVATE)
@@ -92,13 +77,6 @@ class Settings : AppCompatActivity() {
         sosInitButton.setOnClickListener { resetSosMessage() }
         sosEditButton.setOnClickListener { toggleEditMode() }
         sosSaveButton.setOnClickListener { saveSosMessage() }
-
-        // 전화 걸기 버튼 리스너 설정
-        callButton.setOnClickListener {
-            val intent = Intent(this, CallActivity::class.java)
-            startActivity(intent)
-        }
-    }
     }
 
     // 팝업 메뉴
@@ -308,21 +286,5 @@ class Settings : AppCompatActivity() {
         val savedMessage = sharedPreferences.getString("sos_message", "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!")
         sosMessageTextView.text = savedMessage
         editTextSosMessage.setText(savedMessage)
-    }
-
-    private fun playSelectedSound() {
-        if (selectedSound != -1) {
-            val mediaPlayer = MediaPlayer.create(this, selectedSound)
-            mediaPlayer.start()
-            mediaPlayer.setOnCompletionListener {
-                it.release() // 재생이 끝난 후 MediaPlayer 리소스 해제
-            }
-        } else {
-            // 선택된 소리가 없는 경우
-        }
-    }
-    // Load the saved sound from SharedPreferences
-    private fun loadSelectedSound() {
-        selectedSound = sharedPreferences.getInt("selected_sound", -1)
     }
 }
