@@ -46,8 +46,13 @@
             android:exported="false" />
 
         <activity
+            android:name=".Login"
+            android:exported="true"/>
+
+        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -59,5 +64,4 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyClTMRwElDZEoK3WHXoy-8h-MRs78xUb8E" />
     </application>
-
 </manifest>

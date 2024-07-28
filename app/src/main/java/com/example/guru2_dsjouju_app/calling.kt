@@ -10,17 +10,5 @@ class calling : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call)
-
-        // Answer button 클릭 시 activity_call_fix로 이동
-        call
-        }
-
-        // Hangup button 클릭 시 activity_main으로 이동
-        val hangupButton: ImageButton = findViewById(R.id.calling_hangup)
-        hangupButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish() // 현재 Activity 종료
-        }
     }
 }
