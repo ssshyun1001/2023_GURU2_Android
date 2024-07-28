@@ -59,6 +59,7 @@
             android:src="@drawable/semi_background" />
 
         <ImageButton
+            android:id="@+id/button"
             android:layout_width="84dp"
             android:layout_height="75dp"
             android:layout_marginTop="530dp"

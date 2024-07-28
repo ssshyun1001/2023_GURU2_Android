@@ -4,7 +4,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.android3.R
+import com.example.guru2_dsjouju_app.R
 
 class CallActivity : AppCompatActivity() {
 

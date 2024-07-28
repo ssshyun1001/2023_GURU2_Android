@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
-import com.example.android3.R
+import com.example.guru2_dsjouju_app.R
 
 class MainActivity : AppCompatActivity() {
 
