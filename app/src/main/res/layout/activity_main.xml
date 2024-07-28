@@ -44,8 +44,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="10dp"
             android:layout_centerVertical="true"
-            android:text=""
-            android:background="@drawable/baseline_menu_24" />
+            android:background="@drawable/baseline_menu_24"/>
     </LinearLayout>
 
     <FrameLayout

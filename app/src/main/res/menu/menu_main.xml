@@ -10,7 +10,7 @@
         tools:icon="@drawable/mr_button_light" />
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/action_settings"
         android:title="@string/settings"
         app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
         tools:icon="@drawable/mr_button_light" />

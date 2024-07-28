@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- 앱이 특정 하드웨어 기능을 사용 -->
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
-
-    <!-- 앱이 요청할 권한 선언 -->
+        android:required="false" /> <!-- 앱이 요청할 권한 선언 -->
     <uses-permission android:name="android.permission.CALL_PHONE" /> <!-- 전화 -->
     <uses-permission android:name="android.permission.SEND_SMS" /> <!-- 문자 -->
     <uses-permission android:name="android.permission.CAMERA" /> <!-- 카메라 -->
@@ -18,7 +15,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 외부저장소 접근 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 정확한 위치 정보 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/> <!-- 인터넷 -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -31,20 +28,18 @@
         android:theme="@style/Theme.GURU2_DSJouju_App"
         tools:targetApi="34">
         <activity
+            android:name=".Tutorial"
+            android:exported="false" />
+        <activity
             android:name=".Siren_running"
             android:exported="false" />
-
         <activity
             android:name=".Settings"
             android:exported="false" />
-
-        <activity
-            android:name=".CallActivity"/>
-
+        <activity android:name=".CallActivity" />
         <activity
             android:name=".MapActivity"
             android:exported="false" />
-
         <activity
             android:name=".Login"
             android:exported="true"/>
@@ -57,9 +52,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Google Maps API 키 설정 -->
+        </activity> <!-- Google Maps API 키 설정 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyClTMRwElDZEoK3WHXoy-8h-MRs78xUb8E" />

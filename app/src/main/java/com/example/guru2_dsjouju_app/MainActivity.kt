@@ -1,4 +1,4 @@
-package com.example.guru2_dsjouju_app;
+package com.example.guru2_dsjouju_app
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -7,12 +7,11 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
-
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,8 +26,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
         buttonSos = findViewById(R.id.button_sos)
+        homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
 
         homeoptionmenubtn.setOnClickListener { showPopupMenu(it) }
 
@@ -66,15 +65,19 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
+            var allPermissionsGranted = true
             permissions.forEachIndexed { index, permission ->
                 if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "$permission granted", Toast.LENGTH_SHORT).show()
                 } else {
+                    allPermissionsGranted = false
                     Toast.makeText(this, "$permission denied", Toast.LENGTH_SHORT).show()
                 }
             }
-            // 권한 승인 여부에 상관없이 MapActivity로 이동
-            startMapActivity()
+            // 모든 권한이 승인된 경우에만 MapActivity로 이동
+            if (allPermissionsGranted) {
+                startMapActivity()
+            }
         }
     }
 
@@ -86,11 +89,11 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.action_tutorial -> {
                     // 사용법 항목 클릭 시 Tutorial로 이동
-                    //val intent = Intent(this, Tutorial::class.java)
-                    //startActivity(intent)
+                    val intent = Intent(this, Tutorial::class.java)
+                    startActivity(intent)
                     true
                 }
-                R.id.settings -> {
+                R.id.action_settings -> {
                     // 설정 항목 클릭 시 Settings로 이동
                     val intent = Intent(this, Settings::class.java)
                     startActivity(intent)
