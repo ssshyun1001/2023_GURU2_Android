@@ -34,7 +34,7 @@ class Login : AppCompatActivity() {
                 editor.putBoolean("isLoggedIn", true)
                 editor.apply()
 
-                val intent = Intent(this, MapActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish() // 로그인 Activity를 종료합니다.
             } else {
