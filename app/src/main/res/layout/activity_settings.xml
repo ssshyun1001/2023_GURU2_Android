@@ -8,17 +8,18 @@
     android:orientation="vertical"
     tools:context=".Settings">
 
-    <RelativeLayout
+    <!-- Header Section -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:padding="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="16dp"
+            android:layout_weight="1"
             android:fontFamily="sans-serif"
             android:text="설정"
             android:textSize="34sp"
@@ -28,222 +29,206 @@
             android:id="@+id/set_option_menu_btn"
             android:layout_width="35dp"
             android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="10dp"
-            android:layout_centerVertical="true"
             android:text=""
-            android:background="@drawable/baseline_menu_24"
-            />
-    </RelativeLayout>
+            android:background="@drawable/baseline_menu_24"/>
+    </LinearLayout>
 
+    <!-- Main Content ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Emergency Contacts Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="sans-serif"
                 android:text="긴급 연락처"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <!-- 연락처 리스트를 여기에 추가할 수 있도록 준비 -->
+            <EditText
+                android:id="@+id/edit_text_contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="연락처 입력"
+                android:inputType="phone"
+                android:layout_marginTop="4dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <Button
+                    android:id="@+id/add_contact_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="연락처 추가 +"
+                    android:textSize="16sp"/>
+
+                <Button
+                    android:id="@+id/delete_contact_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="연락처 삭제 -"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/contact_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
-                android:orientation="vertical"
-                android:visibility="gone">
-            </LinearLayout>
+                android:orientation="vertical"/>
 
-            <Button
-                android:id="@+id/add_contact_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="4dp"
-                android:text="연락처 추가 +"
-                android:textSize="16sp" />
-
+            <!-- Siren Sound Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="sans-serif"
                 android:text="사이렌 소리"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <RadioGroup
                 android:id="@+id/radio_group_siren"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:orientation="horizontal">
 
                 <RadioButton
                     android:id="@+id/radio_siren1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="경찰차" />
+                    android:text="경찰차"/>
 
                 <RadioButton
                     android:id="@+id/radio_siren2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="소방차" />
+                    android:text="소방차"/>
 
                 <RadioButton
                     android:id="@+id/radio_siren3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="구급차" />
+                    android:text="구급차"/>
             </RadioGroup>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
                 <Button
                     android:id="@+id/siren_apply_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="적용"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
 
                 <Button
                     android:id="@+id/siren_act_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:text="TEST"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp"/>
             </LinearLayout>
 
+            <!-- Location Update Frequency Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="sans-serif"
                 android:text="위치 전송 주기"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <Spinner
                 android:id="@+id/spinner_location_update_frequency"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="24dp"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:padding="8dp" />
+                android:layout_marginTop="4dp"/>
 
+            <!-- SOS Message Settings Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="sans-serif"
                 android:text="SOS 메세지 설정"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <TextView
                 android:id="@+id/sos_message_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="36dp"
-                android:layout_marginEnd="36dp"
                 android:textSize="16sp"/>
 
             <EditText
                 android:id="@+id/edit_text_sosmessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:hint="SOS 메세지"
                 android:inputType="textMultiLine"
-                android:minHeight="48dp"
                 android:visibility="gone"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
                 <Button
                     android:id="@+id/sos_init_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="4dp"
                     android:text="초기화"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
 
                 <Button
                     android:id="@+id/sos_edit_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
                     android:text="수정"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp"/>
 
                 <Button
                     android:id="@+id/sos_save_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
                     android:text="저장"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp"/>
             </LinearLayout>
 
+            <!-- Logout Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="sans-serif"
                 android:text="자동 로그인 해제"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <Button
                 android:id="@+id/logout_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="24dp"
                 android:text="로그아웃"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>
