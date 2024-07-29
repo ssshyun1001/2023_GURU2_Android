@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +33,6 @@ class Login : AppCompatActivity() {
             val password = loginPW?.text.toString().trim()
             if (userDAO?.checkUser(id, password) == true) {
                 Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-
                 // 로그인 성공 시 MainActivity로 이동
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
@@ -45,7 +45,7 @@ class Login : AppCompatActivity() {
         btnSignup?.setOnClickListener { showSignupDialog() }
     }
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("InflateParams")
     private fun showSignupDialog() {
         val builder = AlertDialog.Builder(this)
         val view: View = layoutInflater.inflate(R.layout.dialog_signup, null)
@@ -56,6 +56,7 @@ class Login : AppCompatActivity() {
         val etSignupPassword = view.findViewById<EditText>(R.id.signupPW)
         val etSignupPhone = view.findViewById<EditText>(R.id.textPhone)
         val btnSignupSubmit = view.findViewById<Button>(R.id.signUp)
+        val backButton = view.findViewById<ImageButton>(R.id.backButton)  // backButton 추가
 
         btnCheckId.setOnClickListener {
             val id = etSignupId.text.toString().trim()
@@ -68,6 +69,11 @@ class Login : AppCompatActivity() {
 
         val dialog = builder.create()
 
+        backButton.setOnClickListener {
+            // 다이얼로그를 닫고 로그인 화면으로 돌아가기
+            dialog.dismiss()
+        }
+
         btnSignupSubmit.setOnClickListener {
             val id = etSignupId.text.toString().trim()
             val password = etSignupPassword.text.toString().trim()
@@ -75,6 +81,7 @@ class Login : AppCompatActivity() {
             if (id.isNotEmpty() && password.isNotEmpty() && phone.isNotEmpty()) {
                 if (userDAO?.insertUser(id, password, phone) == true) {
                     Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                    val dialog = builder.create()
                     dialog.dismiss()
                 } else {
                     Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
