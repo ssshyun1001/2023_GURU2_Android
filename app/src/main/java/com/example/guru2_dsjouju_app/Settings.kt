@@ -34,6 +34,8 @@ class Settings : AppCompatActivity() {
     private lateinit var sosEditButton: Button
     private lateinit var sosSaveButton: Button
 
+    private lateinit var logoutButton: Button
+
     private var isEditing = false
     private var originalSosMessage: String = ""
 
@@ -67,6 +69,8 @@ class Settings : AppCompatActivity() {
         sosInitButton = findViewById(R.id.sos_init_button)
         sosEditButton = findViewById(R.id.sos_edit_button)
         sosSaveButton = findViewById(R.id.sos_save_button)
+
+        logoutButton = findViewById(R.id.logout_button)
     }
 
     private fun initializeDatabase() {
@@ -86,6 +90,7 @@ class Settings : AppCompatActivity() {
         sosInitButton.setOnClickListener { resetSosMessage() }
         sosEditButton.setOnClickListener { toggleEditMode() }
         sosSaveButton.setOnClickListener { saveSosMessage() }
+        logoutButton.setOnClickListener { logout() }
     }
 
     private fun loadData() {
@@ -244,5 +249,12 @@ class Settings : AppCompatActivity() {
         val savedMessage = sharedPreferences.getString("sos_message", defaultMessage)
         sosMessageTextView.text = savedMessage
         editTextSosMessage.setText(savedMessage)
+    }
+
+    private fun logout() {
+        // 로그인 화면으로 이동
+        val intent = Intent(this, Login::class.java)
+        startActivity(intent)
+        finish()  // 현재 Settings 액티비티 종료
     }
 }

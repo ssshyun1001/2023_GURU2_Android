@@ -1,6 +1,6 @@
 package com.example.guru2_dsjouju_app
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,11 +12,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class Login : AppCompatActivity() {
-    private var loginID: EditText? = null
-    private var loginPW: EditText? = null
-    private var btnLogin: Button? = null
-    private var btnSignup: Button? = null
-    private var userDAO: UserDAO? = null
+    private lateinit var loginID: EditText
+    private lateinit var loginPW: EditText
+    private lateinit var btnLogin: Button
+    private lateinit var btnSignup: Button
+    private lateinit var userDAO: UserDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,10 +28,10 @@ class Login : AppCompatActivity() {
         btnSignup = findViewById(R.id.buttonSignUp)
         userDAO = UserDAO(this)
 
-        btnLogin?.setOnClickListener {
-            val id = loginID?.text.toString().trim()
-            val password = loginPW?.text.toString().trim()
-            if (userDAO?.checkUser(id, password) == true) {
+        btnLogin.setOnClickListener {
+            val id = loginID.text.toString().trim()
+            val password = loginPW.text.toString().trim()
+            if (userDAO.checkUser(id, password)) {
                 Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                 // 로그인 성공 시 MainActivity로 이동
                 val intent = Intent(this, MainActivity::class.java)
@@ -42,10 +42,9 @@ class Login : AppCompatActivity() {
             }
         }
 
-        btnSignup?.setOnClickListener { showSignupDialog() }
+        btnSignup.setOnClickListener { showSignupDialog() }
     }
 
-    @SuppressLint("InflateParams")
     private fun showSignupDialog() {
         val builder = AlertDialog.Builder(this)
         val view: View = layoutInflater.inflate(R.layout.dialog_signup, null)
@@ -56,11 +55,11 @@ class Login : AppCompatActivity() {
         val etSignupPassword = view.findViewById<EditText>(R.id.signupPW)
         val etSignupPhone = view.findViewById<EditText>(R.id.textPhone)
         val btnSignupSubmit = view.findViewById<Button>(R.id.signUp)
-        val backButton = view.findViewById<ImageButton>(R.id.backButton)  // backButton 추가
+        val backButton = view.findViewById<ImageButton>(R.id.backButton)
 
         btnCheckId.setOnClickListener {
             val id = etSignupId.text.toString().trim()
-            if (userDAO?.checkIfIdExists(id) == true) {
+            if (userDAO.checkIfIdExists(id)) {
                 Toast.makeText(this, "이미 사용 중인 아이디입니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show()
@@ -70,7 +69,6 @@ class Login : AppCompatActivity() {
         val dialog = builder.create()
 
         backButton.setOnClickListener {
-            // 다이얼로그를 닫고 로그인 화면으로 돌아가기
             dialog.dismiss()
         }
 
@@ -79,9 +77,8 @@ class Login : AppCompatActivity() {
             val password = etSignupPassword.text.toString().trim()
             val phone = etSignupPhone.text.toString().trim()
             if (id.isNotEmpty() && password.isNotEmpty() && phone.isNotEmpty()) {
-                if (userDAO?.insertUser(id, password, phone) == true) {
+                if (userDAO.insertUser(id, password, phone)) {
                     Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                    val dialog = builder.create()
                     dialog.dismiss()
                 } else {
                     Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
