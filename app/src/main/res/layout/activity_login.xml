@@ -34,7 +34,6 @@
             android:background="@drawable/box_id"
             android:ems="10"
             android:hint="아이디 ID"
-            android:inputType="textPersonName"
             android:text="" />
 
         <EditText
