@@ -76,11 +76,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
                     addPoliceStationMarkers()
                     createHeatmap(currentLatLng)
+                    addConvenienceStoreMarkers()
                 } else {
                     Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
                     initializeMap()
                     addPoliceStationMarkers()
                     createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
+                    addConvenienceStoreMarkers()
                 }
             }
         }
@@ -89,6 +91,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private fun initializeMap() {
         val seoul = LatLng(37.5665, 126.9780)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12.0f))
+        addPoliceStationMarkers()
+        addConvenienceStoreMarkers()
 
         // Zoom 컨트롤 설정
         // setupZoomControls()
@@ -97,7 +101,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     // Implement the onMarkerClick method to handle marker clicks
     override fun onMarkerClick(marker: Marker): Boolean {
         val policeStation = marker.tag as? PoliceStation
+        val convenienceStore = marker.tag as? ConvenienceStore
         policeStation?.let {
+            Toast.makeText(this, "${it.name}\n${it.address}", Toast.LENGTH_SHORT).show()
+        }
+        convenienceStore?.let {
             Toast.makeText(this, "${it.name}\n${it.address}", Toast.LENGTH_SHORT).show()
         }
         return false
@@ -163,6 +171,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
     }
 
+    private fun addConvenienceStoreMarkers() {
+        // Convenience store data list
+        val convenienceStores = loadConvenienceStoresFromJson()
+
+        convenienceStores.forEach { store ->
+            val position = LatLng(store.latitude, store.longitude)
+            val markerOptions = MarkerOptions()
+                .position(position)
+                .title(store.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // Different color for convenience stores
+            val marker = mMap.addMarker(markerOptions)
+            marker?.tag = store
+        }
+    }
+
     private fun createHeatmap(currentLocation: LatLng) {
         val data = loadDataFromJson()
         val filteredData = data.filter { location ->
@@ -205,4 +228,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         Log.d("MapActivity", "Loaded ${data.size} data points")
         return data
     }
+    private fun loadConvenienceStoresFromJson(): List<ConvenienceStore> {
+        val stores = mutableListOf<ConvenienceStore>()
+        try {
+            val json = assets.open("convenience_stores.json").bufferedReader().use { it.readText() }
+            val jsonObject = JSONObject(json)
+            val dataArray = jsonObject.getJSONArray("DATA")
+
+            for (i in 0 until dataArray.length()) {
+                val obj = dataArray.getJSONObject(i)
+                val name = obj.getString("NAME")
+                val address = obj.getString("ADDRESS")
+                val lat = obj.getDouble("LAT")
+                val lng = obj.getDouble("LNG")
+                stores.add(ConvenienceStore(name, address, lat, lng))
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        Log.d("MapActivity", "Loaded ${stores.size} convenience stores")
+        return stores
+    }
+
+    data class PoliceStation(val name: String, val address: String, val latitude: Double, val longitude: Double)
+    data class ConvenienceStore(val name: String, val address: String, val latitude: Double, val longitude: Double)
 }
