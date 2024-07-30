@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 
 class ReceiveCall : AppCompatActivity() {
@@ -14,8 +15,8 @@ class ReceiveCall : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receivecall)
 
-        val answerButton: Button = findViewById(R.id.calling_answer)
-        val hangupButton: Button = findViewById(R.id.calling_hangup)
+        val answerButton: ImageButton = findViewById(R.id.calling_answer)
+        val hangupButton: ImageButton = findViewById(R.id.calling_hangup)
 
         answerButton.setOnClickListener {
             // activity_call_fix 화면으로 이동

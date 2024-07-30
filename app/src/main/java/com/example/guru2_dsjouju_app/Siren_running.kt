@@ -23,13 +23,19 @@ class Siren_running : AppCompatActivity() {
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var isButtonPressed = false
 
+    private lateinit var loginID: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_siren_running)
 
+        // 로그인 ID를 인텐트에서 추출
+        loginID = intent.getStringExtra("LOGIN_ID") ?: ""
+
         sosButton = findViewById(R.id.sosButton)
 
-        sosManager = SosManager(this, sosButton)
+        sosManager = SosManager(this, sosButton, loginID)
+
         sosButton.setOnClickListener { sosManager.showSosDialog() }
         sosButton.setOnLongClickListener {
             sosManager.handleLongPress()
@@ -50,7 +56,7 @@ class Siren_running : AppCompatActivity() {
             .setNegativeButton("취소") { dialog, _ ->
                 dialog.dismiss()
                 countdownTimer?.cancel()
-                stopSirenAndReturnToMain()
+                stopSirenAndReturnToPrevious()
             }
 
         val alert = builder.create()
@@ -92,7 +98,8 @@ class Siren_running : AppCompatActivity() {
             isButtonPressed = true
             handler.postDelayed({
                 if (isButtonPressed) {
-                    stopSirenAndReturnToMain()
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
                 }
             }, 3000)
             true
@@ -102,14 +109,12 @@ class Siren_running : AppCompatActivity() {
         }
     }
 
-    private fun stopSirenAndReturnToMain() {
+    private fun stopSirenAndReturnToPrevious() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
         countdownTimer?.cancel()
 
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
         finish()
     }
 

@@ -10,9 +10,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.telephony.SmsManager
 
-// 통계청 기준으로 변경 필요, 기본 구글 틀로 시도해본 코드
-
-class SendMessage(private val context: Context, private val phoneNumber: String) {
+// SMS 전송 클래스
+class SendMessage(private val context: Context, private val loginID: String,
+                  private val savedMessage: String = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!") {
 
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -32,11 +32,16 @@ class SendMessage(private val context: Context, private val phoneNumber: String)
     }
 
     private fun sendSMS(location: Location) {
-        val message = "위치: https://maps.google.com/?q=${location.latitude},${location.longitude}"
+        val dao = ContactsDAO(context, loginID)
+        val contacts = dao.getContactsById()
+        val message = "$savedMessage\n현재 위치: https://maps.google.com/?q=${location.latitude},${location.longitude}"
+
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             try {
-                val smsManager = SmsManager.getDefault()  //Deprecation 경고가 뜨지만, 발송 확인 완료
-                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+                val smsManager = SmsManager.getDefault()
+                for (contact in contacts) {
+                    smsManager.sendTextMessage(contact.phone, null, message, null, null)
+                }
                 Toast.makeText(context, "SOS 메시지가 전송되었습니다.", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(context, "메시지 전송 중 오류가 발생했습니다: ${e.message}", Toast.LENGTH_LONG).show()

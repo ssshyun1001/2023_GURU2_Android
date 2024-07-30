@@ -49,7 +49,9 @@
         android:layout_below="@+id/sosLabelText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:background="@drawable/app_icon_sos_x"
-        android:backgroundTint="@color/blue" />
+        android:scaleType="fitCenter"
+        android:background="@null"
+        android:src="@drawable/app_icon_sos_x"
+        map:tint="@color/yellow" />
 
 </RelativeLayout>

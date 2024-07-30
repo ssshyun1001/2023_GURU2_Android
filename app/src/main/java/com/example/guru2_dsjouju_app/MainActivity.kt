@@ -23,9 +23,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sosButton: ImageButton
     private lateinit var callButton: ImageButton
 
+    private lateinit var loginID: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // 로그인 ID를 인텐트에서 추출
+        loginID = intent.getStringExtra("LOGIN_ID") ?: ""
 
         homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
 
@@ -38,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
         sirenButton.setOnClickListener { startSirenActivity() }
 
-        sosManager = SosManager(this, sosButton)
+        sosManager = SosManager(this, sosButton, loginID)
+
         sosButton.setOnClickListener { sosManager.showSosDialog() }
         sosButton.setOnLongClickListener {
             sosManager.handleLongPress()
@@ -84,10 +90,9 @@ class MainActivity : AppCompatActivity() {
             var allPermissionsGranted = true
             permissions.forEachIndexed { index, permission ->
                 if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "$permission granted", Toast.LENGTH_SHORT).show()
                 } else {
                     allPermissionsGranted = false
-                    Toast.makeText(this, "$permission denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "$permission 접근 거부됨", Toast.LENGTH_SHORT).show()
                 }
             }
             // 모든 권한이 승인된 경우에만 MapActivity로 이동

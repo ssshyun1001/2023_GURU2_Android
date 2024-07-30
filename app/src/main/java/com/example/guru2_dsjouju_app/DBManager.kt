@@ -16,8 +16,6 @@ class DBManager(
 
 
     override fun onCreate(db: SQLiteDatabase?) {
-
-
         // contacts 테이블 생성
         db!!.execSQL(
             "CREATE TABLE contacts (" +
@@ -25,18 +23,11 @@ class DBManager(
                     "phone TEXT, " +
                     "PRIMARY KEY (id, phone))"
         )
-//        // messages 테이블 생성
-//        db.execSQL(
-//            "CREATE TABLE messages (" +
-//                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-//                    "message TEXT)"
-//        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         // 테이블 업그레이드
         db!!.execSQL("DROP TABLE IF EXISTS contacts")
-        db.execSQL("DROP TABLE IF EXISTS messages")
         onCreate(db)
     }
 }
