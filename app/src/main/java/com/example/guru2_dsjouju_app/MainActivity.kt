@@ -1,14 +1,12 @@
 package com.example.guru2_dsjouju_app
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -20,10 +18,12 @@ class MainActivity : AppCompatActivity() {
     // 권한 요청 코드 상수
     private val PERMISSION_REQUEST_CODE = 100
 
-    private lateinit var homeoptionmenubtn: Button
+    private lateinit var homeoptionmenubtn: ImageButton
 
+    private lateinit var sirenButton: ImageButton
     private lateinit var sosManager: SosManager
-    private lateinit var sosButton: Button
+    private lateinit var sosButton: ImageButton
+    private lateinit var callButton: ImageButton
 
     private var countdownTimer: CountDownTimer? = null
 
@@ -33,10 +33,14 @@ class MainActivity : AppCompatActivity() {
 
         homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
 
+        sirenButton = findViewById(R.id.button_siren)
         sosButton = findViewById(R.id.button_sos)
-        sosButton.setBackgroundResource(R.drawable.app_icon_sos_x)
+        sosButton.setImageResource(R.drawable.app_icon_sos_x)
+        callButton = findViewById(R.id.button_call)
 
         homeoptionmenubtn.setOnClickListener { showPopupMenu(it) }
+
+        sirenButton.setOnClickListener{}
 
         sosManager = SosManager(this, sosButton)
         sosButton.setOnClickListener { sosManager.showSosDialog() }
@@ -44,6 +48,7 @@ class MainActivity : AppCompatActivity() {
             sosManager.handleLongPress()
             true
         }
+
 
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()

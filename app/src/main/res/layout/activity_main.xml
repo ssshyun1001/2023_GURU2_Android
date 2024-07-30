@@ -23,12 +23,22 @@
             android:layout_weight="1"
             android:text="경찰서" />
 
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0" />
+
         <Button
             android:id="@+id/convenientStore"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="편의점" />
+
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0" />
 
         <Button
             android:id="@+id/cctv"
@@ -37,14 +47,15 @@
             android:layout_weight="1"
             android:text="CCTV" />
 
-        <Button
+        <ImageButton
             android:id="@+id/home_option_menu_btn"
             android:layout_width="35dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="10dp"
             android:layout_centerVertical="true"
-            android:background="@drawable/baseline_menu_24"/>
+            android:background="@drawable/baseline_menu_24"
+            android:backgroundTint="@color/yellow"/>
     </LinearLayout>
 
     <FrameLayout
@@ -59,9 +70,10 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            map:uiZoomControls="true"
+            map:cameraTilt="30"
             map:uiRotateGestures="true"
-            map:cameraTilt="30" />
+            map:uiZoomControls="true" />
+
     </FrameLayout>
 
     <LinearLayout
@@ -70,34 +82,48 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:padding="10dp"
-        android:gravity="center">
+        android:paddingStart="48dp"
+        android:paddingEnd="48dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="36dp"
+        android:gravity="center_vertical">
 
         <ImageButton
             android:id="@+id/button_siren"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/baseline_siren_24"
-            android:contentDescription="@string/button_siren"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"/>
-
-        <Button
-            android:id="@+id/button_sos"
             android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:contentDescription="@string/sos_history"
-            android:background="@drawable/app_icon_sos_x"
-            android:padding="10dp"/>
+            android:layout_height="58dp"
+            android:background="@drawable/app_icon_siren"
+            android:contentDescription="@string/button_siren"
+            android:layout_weight="0"
+            android:backgroundTint="@color/deep_blue" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <ImageButton
             android:id="@+id/button_call"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/baseline_call_24"
+            android:layout_width="55.5dp"
+            android:layout_height="56dp"
+            android:background="@drawable/app_icon_receive_call"
             android:contentDescription="@string/button_calling"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"/>
+            android:layout_weight="0"
+            android:backgroundTint="@color/deep_blue" />
     </LinearLayout>
+
+    <!-- 오버레이로 button_sos 추가 -->
+    <ImageButton
+        android:id="@+id/button_sos"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/app_icon_sos_x"
+        android:background="@drawable/button_sos_background"
+        android:scaleType="fitCenter"
+        android:padding="30dp"
+        map:tint="@color/white" />
 
 </RelativeLayout>

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="light_gray">#F4F4F4</color>
     <color name="white">#FFFFFFFF</color>
     <color name="semi_white">#F4FBFF</color>
-    <color name="yellow">#FFC845</color>
-    <color name="blue">#1249F0</color>s
-    <color name="red">#FF0000</color>
 
+    <color name="yellow">#FFC845</color>
+    <color name="deep_yellow">#FFAA11</color>
+
+    <color name="blue">#1249F0</color>
+    <color name="deep_blue">#0B2E98</color>
+    <color name="light_blue">#7795F0</color>
+
+    <color name="red">#FF0000</color>
 </resources>

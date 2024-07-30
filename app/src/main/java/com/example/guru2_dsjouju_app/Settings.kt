@@ -3,7 +3,10 @@ package com.example.guru2_dsjouju_app
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -12,7 +15,8 @@ import androidx.appcompat.widget.PopupMenu
 
 class Settings : AppCompatActivity() {
 
-    private lateinit var setOptionMenuBtn: Button
+    lateinit var setOptionMenuBtn: ImageButton
+
     private lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var addContactButton: Button
@@ -60,7 +64,7 @@ class Settings : AppCompatActivity() {
 
         radioGroup = findViewById(R.id.radio_group_siren)
         applyButton = findViewById(R.id.siren_apply_button)
-        testButton = findViewById(R.id.siren_act_button)
+        testButton = findViewById(R.id.siren_test_button)
 
         spinner = findViewById(R.id.spinner_location_update_frequency)
 
@@ -174,6 +178,24 @@ class Settings : AppCompatActivity() {
         val selectedId = radioGroup.checkedRadioButtonId
         val selectedRadioButton = findViewById<RadioButton>(selectedId)
         val sirenText = selectedRadioButton?.text.toString()
+
+        val sirenType = when (selectedId) {
+            R.id.radio_siren1 -> R.raw.police_siren
+            R.id.radio_siren2 -> R.raw.fire_trucks_siren
+            R.id.radio_siren3 -> R.raw.ambulance_siren
+            else -> return
+        }
+
+        // MediaPlayer를 사용하여 사이렌 소리 재생
+        val mediaPlayer = MediaPlayer.create(this, sirenType)
+        mediaPlayer.start()
+
+        // 3초 후에 소리 멈추기
+        Handler(Looper.getMainLooper()).postDelayed({
+            mediaPlayer.stop()
+            mediaPlayer.release()
+        }, 3000)
+
         Toast.makeText(this, "현재 사이렌 소리: $sirenText", Toast.LENGTH_SHORT).show()
     }
 

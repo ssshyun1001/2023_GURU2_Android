@@ -1,8 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.GURU2_DSJouju_App" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/deep_blue</item>
+
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryVariant">@color/yellow</item>
+        <item name="colorOnPrimary">@color/semi_white</item>
+        <item name="colorSecondary">@color/yellow</item>
+        <item name="colorSecondaryVariant">@color/deep_yellow</item>
+        <item name="colorOnSecondary">@color/semi_white</item>
+        <item name="android:colorBackground">@color/white</item>
     </style>
 
     <style name="Theme.GURU2_DSJouju_App" parent="Base.Theme.GURU2_DSJouju_App" />

@@ -1,18 +1,15 @@
 package com.example.guru2_dsjouju_app
 
 import android.content.Context
-import android.graphics.drawable.TransitionDrawable
 import android.os.CountDownTimer
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 
-class SosManager(private val context: Context, private val sosButton: Button) {
+class SosManager(private val context: Context, private val sosButton: ImageButton) {
 
     var sosisrunning = 0
     private var countdownTimer: CountDownTimer? = null
-    private var longPressTimer: CountDownTimer? = null
 
     fun showSosDialog() {
         if (sosisrunning == 1) {
@@ -50,7 +47,7 @@ class SosManager(private val context: Context, private val sosButton: Button) {
 
     private fun startSos() {
         sosisrunning = 1
-        sosButton.setBackgroundResource(R.drawable.app_icon_sos_o) // 아이콘 변경 (적절한 아이콘으로 대체)
+        sosButton.setImageResource(R.drawable.app_icon_sos_o) // 아이콘 변경 (적절한 아이콘으로 대체)
         Toast.makeText(context, "SOS 도움 요청이 시작되었습니다", Toast.LENGTH_LONG).show()
     }
 
@@ -65,8 +62,8 @@ class SosManager(private val context: Context, private val sosButton: Button) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsElapsed = (3000 - millisUntilFinished) / 1000
                 when (secondsElapsed) {
-                    1L -> sosButton.setBackgroundResource(R.drawable.app_icon_sos_1)
-                    2L -> sosButton.setBackgroundResource(R.drawable.app_icon_sos_2)
+                    1L -> sosButton.setImageResource(R.drawable.app_icon_sos_1)
+                    2L -> sosButton.setImageResource(R.drawable.app_icon_sos_2)
                 }
             }
 
@@ -79,7 +76,7 @@ class SosManager(private val context: Context, private val sosButton: Button) {
 
     private fun stopSos() {
         sosisrunning = 0
-        sosButton.setBackgroundResource(R.drawable.app_icon_sos_x) // 비활성화 아이콘으로 변경
+        sosButton.setImageResource(R.drawable.app_icon_sos_x) // 비활성화 아이콘으로 변경
         Toast.makeText(context, "SOS 도움 요청이 종료되었습니다", Toast.LENGTH_LONG).show()
     }
 }

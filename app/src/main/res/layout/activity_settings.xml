@@ -8,32 +8,34 @@
     android:orientation="vertical"
     tools:context=".Settings">
 
-    <!-- Header Section -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="16dp"
             android:fontFamily="sans-serif"
             android:text="설정"
             android:textSize="34sp"
             android:textStyle="bold"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/set_option_menu_btn"
             android:layout_width="35dp"
             android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
             android:text=""
-            android:background="@drawable/baseline_menu_24"/>
-    </LinearLayout>
+            android:background="@drawable/baseline_menu_24"
+            android:backgroundTint="@color/yellow" />
+    </RelativeLayout>
 
-    <!-- Main Content ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -44,7 +46,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Emergency Contacts Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +137,7 @@
                     android:textSize="16sp"/>
 
                 <Button
-                    android:id="@+id/siren_act_button"
+                    android:id="@+id/siren_test_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TEST"
@@ -226,9 +227,13 @@
                 android:id="@+id/logout_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="24dp"
+                android:textColor="@color/red"
+                android:backgroundTint="@color/light_gray"
                 android:text="로그아웃"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"/>
+                android:textStyle="bold"
+                android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

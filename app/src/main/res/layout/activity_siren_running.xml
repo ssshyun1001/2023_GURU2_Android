@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:padding="16dp">
 
     <TextView
@@ -10,32 +11,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="140dp"
-        android:layout_marginEnd="108dp"
-        android:text="사이렌 상태: 꺼짐"
-        android:textSize="24sp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:text="사이렌 작동중 ···"
+        android:textStyle="bold"
+        android:textSize="36sp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/toggleSirenButton"
-        android:layout_width="342dp"
-        android:layout_height="276dp"
+        android:layout_width="285dp"
+        android:layout_height="285dp"
         android:layout_below="@id/sirenStatusText"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="33dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="36dp"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/app_icon_siren" />
+        android:background="@drawable/button_sos_background"
+        android:src="@drawable/app_icon_siren"
+        android:scaleType="fitCenter"
+        android:padding="45dp"
+        map:tint="@color/white"/>
 
-    <Button
+    <TextView
+        android:id="@+id/sosLabelText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toggleSirenButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="175dp"
+        android:text="SOS 도움 요청"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ImageButton
         android:id="@+id/sosButton"
-        android:layout_width="110dp"
-        android:layout_height="72dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="134dp"
-        android:layout_marginBottom="41dp"
-        android:background="@drawable/app_icon_sos_o" />
-
+        android:layout_width="116dp"
+        android:layout_height="104dp"
+        android:layout_below="@+id/sosLabelText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/app_icon_sos_x"
+        android:backgroundTint="@color/blue" />
 
 </RelativeLayout>
