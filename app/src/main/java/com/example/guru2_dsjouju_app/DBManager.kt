@@ -21,12 +21,12 @@ class DBManager(
                     "phone TEXT, " +
                     "PRIMARY KEY (id, phone))"
         )
-        // messages 테이블 생성
-        db.execSQL(
-            "CREATE TABLE messages (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "message TEXT)"
-        )
+//        // messages 테이블 생성
+//        db.execSQL(
+//            "CREATE TABLE messages (" +
+//                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+//                    "message TEXT)"
+//        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -54,10 +54,11 @@ class ContactsDAO(context: Context) {
     }
 
     // 연락처 삭제 메서드
-    fun deleteContact(id: String, phone: String) {
+    fun deleteContact(id: String, phone: String): Int {
         val db = dbManager.writableDatabase
-        db.delete("contacts", "id = ? AND phone = ?", arrayOf(id, phone))
+        val result = db.delete("contacts", "id = ? AND phone = ?", arrayOf(id, phone))
         db.close()
+        return result
     }
 
     // 연락처 수정 메서드
@@ -70,20 +71,6 @@ class ContactsDAO(context: Context) {
         db.close()
     }
 
-    // 모든 연락처 조회 메서드
-    fun getAllContacts(): List<Contact> {
-        val db = dbManager.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM contacts", null)
-        val contacts = mutableListOf<Contact>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
-            val phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"))
-            contacts.add(Contact(id, phone))
-        }
-        cursor.close()
-        db.close()
-        return contacts
-    }
 
     // 특정 ID에 해당하는 연락처 조회 메서드
     fun getContactsById(id: String): List<Contact> {
@@ -105,52 +92,52 @@ class ContactsDAO(context: Context) {
 
 
 
-class MessagesDAO(context: Context) {
-
-    private val dbManager = DBManager(context, "messagesDB", null, 1)
-
-    // 메시지 추가 메서드
-    fun insertMessage(message: String) {
-        val db = dbManager.writableDatabase
-        val values = ContentValues().apply {
-            put("message", message)
-        }
-        db.insert("messages", null, values)
-        db.close()
-    }
-
-    // 메시지 삭제 메서드
-    fun deleteMessage(id: Int) {
-        val db = dbManager.writableDatabase
-        db.delete("messages", "id = ?", arrayOf(id.toString()))
-        db.close()
-    }
-
-    // 메시지 수정 메서드
-    fun updateMessage(id: Int, newMessage: String) {
-        val db = dbManager.writableDatabase
-        val values = ContentValues().apply {
-            put("message", newMessage)
-        }
-        db.update("messages", values, "id = ?", arrayOf(id.toString()))
-        db.close()
-    }
-
-    // 모든 메시지 조회 메서드
-    fun getAllMessages(): List<Message> {
-        val db = dbManager.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM messages", null)
-        val messages = mutableListOf<Message>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-            val message = cursor.getString(cursor.getColumnIndexOrThrow("message"))
-            messages.add(Message(id, message))
-        }
-        cursor.close()
-        db.close()
-        return messages
-    }
-
-    // 메시지 클래스
-    data class Message(val id: Int, val message: String)
-}
+//class MessagesDAO(context: Context) {
+//
+//    private val dbManager = DBManager(context, "messagesDB", null, 1)
+//
+//    // 메시지 추가 메서드
+//    fun insertMessage(message: String) {
+//        val db = dbManager.writableDatabase
+//        val values = ContentValues().apply {
+//            put("message", message)
+//        }
+//        db.insert("messages", null, values)
+//        db.close()
+//    }
+//}
+//    // 메시지 삭제 메서드
+//    fun deleteMessage(id: Int) {
+//        val db = dbManager.writableDatabase
+//        db.delete("messages", "id = ?", arrayOf(id.toString()))
+//        db.close()
+//    }
+//
+//    // 메시지 수정 메서드
+//    fun updateMessage(id: Int, newMessage: String) {
+//        val db = dbManager.writableDatabase
+//        val values = ContentValues().apply {
+//            put("message", newMessage)
+//        }
+//        db.update("messages", values, "id = ?", arrayOf(id.toString()))
+//        db.close()
+//    }
+//
+//    // 모든 메시지 조회 메서드
+//    fun getAllMessages(): List<Message> {
+//        val db = dbManager.readableDatabase
+//        val cursor: Cursor = db.rawQuery("SELECT * FROM messages", null)
+//        val messages = mutableListOf<Message>()
+//        while (cursor.moveToNext()) {
+//            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+//            val message = cursor.getString(cursor.getColumnIndexOrThrow("message"))
+//            messages.add(Message(id, message))
+//        }
+//        cursor.close()
+//        db.close()
+//        return messages
+//    }
+//
+//    // 메시지 클래스
+//    data class Message(val id: Int, val message: String)
+//}

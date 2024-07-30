@@ -130,7 +130,7 @@ class Settings : AppCompatActivity() {
 
     private fun updateContactList() {
         contactListLayout.removeAllViews()
-        val contacts = contactsDAO.getAllContacts()
+        val contacts = contactsDAO.getContactsById(loginID)
         contacts.forEach { contact ->
             val textView = TextView(this).apply {
                 text = "ID: ${contact.id}, Phone: ${contact.phone}"
@@ -157,8 +157,14 @@ class Settings : AppCompatActivity() {
         val phone = editTextContact.text.toString()
         val id = loginID
         if (phone.isNotEmpty()) {
-            contactsDAO.deleteContact(id, phone)
-            updateContactList()
+            val rowsDeleted = contactsDAO.deleteContact(id, phone) // 삭제된 레코드 수를 반환 받음
+            if (rowsDeleted > 0) {
+                // 삭제가 성공한 경우
+                updateContactList()
+            } else {
+                // 삭제된 레코드가 없는 경우, 즉 전화번호가 존재하지 않는 경우
+                Toast.makeText(this, "존재하지 않는 전화번호입니다.", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(this, "전화번호를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
