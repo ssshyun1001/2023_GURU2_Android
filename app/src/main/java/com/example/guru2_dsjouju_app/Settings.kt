@@ -43,9 +43,14 @@ class Settings : AppCompatActivity() {
     private var isEditing = false
     private var originalSosMessage: String = ""
 
+    private lateinit var loginID: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        // loginID를 인텐트에서 추출
+        loginID = intent.getStringExtra("LOGIN_ID") ?: ""
 
         initializeUI()
         initializeDatabase()
@@ -139,7 +144,7 @@ class Settings : AppCompatActivity() {
     private fun addContact() {
         val phone = editTextContact.text.toString().trim()
         if (phone.isNotEmpty()) {
-            val id = "user-id" // 실제 ID로 교체 필요
+            val id = loginID
             contactsDAO.insertContact(id, phone)
             editTextContact.text.clear()
             updateContactList()
@@ -150,7 +155,7 @@ class Settings : AppCompatActivity() {
 
     private fun deleteContact() {
         val phone = editTextContact.text.toString()
-        val id = "user-id" // 실제 ID로 교체 필요
+        val id = loginID
         if (phone.isNotEmpty()) {
             contactsDAO.deleteContact(id, phone)
             updateContactList()

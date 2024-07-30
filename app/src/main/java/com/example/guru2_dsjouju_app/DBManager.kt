@@ -85,6 +85,20 @@ class ContactsDAO(context: Context) {
         return contacts
     }
 
+    // 특정 ID에 해당하는 연락처 조회 메서드
+    fun getContactsById(id: String): List<Contact> {
+        val db = dbManager.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM contacts WHERE id = ?", arrayOf(id))
+        val contacts = mutableListOf<Contact>()
+        while (cursor.moveToNext()) {
+            val phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"))
+            contacts.add(Contact(id, phone))
+        }
+        cursor.close()
+        db.close()
+        return contacts
+    }
+
     // 연락처 클래스
     data class Contact(val id: String, val phone: String)
 }

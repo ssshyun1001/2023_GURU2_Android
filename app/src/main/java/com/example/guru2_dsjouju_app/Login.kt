@@ -31,6 +31,11 @@ class Login : AppCompatActivity() {
         btnLogin.setOnClickListener {
             val id = loginID.text.toString().trim()
             val password = loginPW.text.toString().trim()
+            //setting 코틀린에 로그인시 아이디 전달하기
+            val intent = Intent(this, Settings::class.java)
+            intent.putExtra("LOGIN_ID", loginID.text.toString())
+            startActivity(intent)
+
             if (userDAO.checkUser(id, password)) {
                 Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                 // 로그인 성공 시 MainActivity로 이동
