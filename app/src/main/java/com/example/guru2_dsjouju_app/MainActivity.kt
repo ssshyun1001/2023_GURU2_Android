@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,8 +23,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sosButton: ImageButton
     private lateinit var callButton: ImageButton
 
-    private var countdownTimer: CountDownTimer? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -40,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         homeoptionmenubtn.setOnClickListener { showPopupMenu(it) }
 
-        sirenButton.setOnClickListener{}
+        sirenButton.setOnClickListener { startSirenActivity() }
 
         sosManager = SosManager(this, sosButton)
         sosButton.setOnClickListener { sosManager.showSosDialog() }
@@ -49,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        callButton.setOnClickListener { startCallActivity() }
 
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()
@@ -127,7 +124,15 @@ class MainActivity : AppCompatActivity() {
     private fun startMapActivity() {
         val intent = Intent(this, MapActivity::class.java)
         startActivity(intent)
-        // finish()를 제거하거나 주석 처리하여 권한 요청 후 Activity가 종료되지 않도록 합니다.
-        // finish()
+    }
+
+    private fun startSirenActivity() {
+        val intent = Intent(this, Siren_running::class.java)
+        startActivity(intent)
+    }
+
+    private fun startCallActivity() {
+        val intent = Intent(this, ReceiveCall::class.java)
+        startActivity(intent)
     }
 }

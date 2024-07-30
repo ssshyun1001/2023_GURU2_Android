@@ -133,7 +133,7 @@ class Settings : AppCompatActivity() {
         val contacts = contactsDAO.getContactsById()
         contacts.forEach { contact ->
             val textView = TextView(this).apply {
-                text = "ID: ${contact.id}, Phone: ${contact.phone}"
+                "ID: ${contact.id}, Phone: ${contact.phone}".also { text = it }
                 textSize = 16f
                 setPadding(0, 8, 0, 8)
             }

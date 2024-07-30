@@ -50,11 +50,9 @@
         <ImageButton
             android:id="@+id/home_option_menu_btn"
             android:layout_width="35dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
+            android:layout_height="35dp"
             android:layout_marginStart="10dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/baseline_menu_24"
+            android:background="@drawable/app_icon_menu"
             android:backgroundTint="@color/yellow"/>
     </LinearLayout>
 

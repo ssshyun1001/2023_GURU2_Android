@@ -1,8 +1,10 @@
 package com.example.guru2_dsjouju_app
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
@@ -11,6 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class Siren_running : AppCompatActivity() {
+
+    private var countdownTimer: CountDownTimer? = null
 
     private lateinit var sosManager: SosManager
     private lateinit var sosButton: ImageButton
@@ -32,6 +36,39 @@ class Siren_running : AppCompatActivity() {
             true
         }
 
+        showSirenDialog()
+    }
+
+    fun showSirenDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("3초 후 사이렌이 실행됩니다.")
+            .setCancelable(false)
+            .setPositiveButton("확인") { _, _ ->
+                startSiren()
+                countdownTimer?.cancel()
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+                countdownTimer?.cancel()
+                stopSirenAndReturnToMain()
+            }
+
+        val alert = builder.create()
+        alert.show()
+
+        countdownTimer = object : CountDownTimer(3500, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                alert.setMessage("3초 후 사이렌이 실행됩니다.\n자동 시작까지 ${millisUntilFinished / 1000}초 남았습니다.")
+            }
+
+            override fun onFinish() {
+                startSiren()
+                alert.dismiss()
+            }
+        }.start()
+    }
+
+    private fun startSiren() {
         val sirenType = intent.getStringExtra("siren_type")
         val soundResId = when (sirenType) {
             "siren_police" -> R.raw.police_siren
@@ -69,7 +106,8 @@ class Siren_running : AppCompatActivity() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
-        Toast.makeText(this, "사이렌 중지", Toast.LENGTH_SHORT).show()
+        countdownTimer?.cancel()
+
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

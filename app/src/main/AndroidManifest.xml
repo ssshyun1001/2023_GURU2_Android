@@ -23,7 +23,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/app_main"
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DSJouju_App"
         tools:targetApi="34">
@@ -39,7 +39,7 @@
 
         <activity android:name=".Call_activity" />
 
-        <activity android:name=".calling" />
+        <activity android:name=".ReceiveCall" />
 
         <activity
             android:name=".MapActivity"

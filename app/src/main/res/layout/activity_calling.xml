@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,70 +8,251 @@
         android:layout_height="match_parent"
         android:background="@null"
         android:scaleType="centerCrop"
-        android:src="@drawable/android_calling" />
+        android:src="@drawable/background_calling" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_calling"
+        <LinearLayout
+            android:id="@+id/timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
-            android:padding="10dp"
-            android:text="수신전화"
-            android:textSize="20sp"
-            tools:ignore="InvalidId" />
+            android:layout_marginTop="36dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/app_icon_call_phone"/>
+
+            <TextView
+                android:id="@+id/text_call_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="00:00"
+                android:textSize="20sp"
+                android:drawablePadding="10dp"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/text_contact_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_call_timer"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp"
+            android:layout_below="@+id/timer"
+            android:layout_marginTop="60dp"
             android:text="아 빠"
             android:textSize="35sp"
-            android:textStyle="bold"
-            tools:ignore="UnknownIdInLayout" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_contact_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:layout_below="@id/text_contact_name"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="100dp"
-            android:text="휴대전화 010-1234-5678"
+            android:layout_marginTop="8dp"
+            android:text="휴대전화   010-1234-5678"
             android:textSize="16sp" />
 
-        <ImageButton
-            android:id="@+id/calling_answer"
-            android:layout_width="84dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="500dp"
-            android:layout_marginStart="65dp"
-            android:src="@drawable/app_icon_pickup"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"
-            android:background="@null" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp"
+            android:src="@drawable/semi_background" />
 
         <ImageButton
-            android:id="@+id/calling_hangup"
-            android:layout_width="84dp"
+            android:id="@+id/call_break_btn"
+            android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_marginTop="500dp"
-            android:layout_marginStart="260dp"
-            android:src="@drawable/app_icon_hangup2"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"
-            android:background="@null" />
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="135dp"
+            android:layout_centerHorizontal="true"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/app_icon_hangup2" />
 
+        <GridLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="215dp"
+            android:padding="50dp"
+            android:columnCount="3"
+            android:rowCount="3">
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/button_record"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:contentDescription="녹음"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/app_icon_record" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="녹음"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/button_siren"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:contentDescription="사이렌"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/app_icon_siren" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="사이렌"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/button_bluetooth"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:contentDescription="블루투스"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/app_icon_bluetooth" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="블루투스"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/button_speaker"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:contentDescription="스피커"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/app_icon_speaker" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="스피커"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/button_sos_stop"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:contentDescription="도움요청"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/app_icon_sos_x" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="도움요청"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/button_keypad"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@null"
+                    android:contentDescription="키패드"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/app_icon_keypad" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="키패드"
+                    android:layout_marginTop="4dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </GridLayout>
     </RelativeLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

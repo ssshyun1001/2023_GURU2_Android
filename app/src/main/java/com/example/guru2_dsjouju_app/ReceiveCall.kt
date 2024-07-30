@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
-class calling : AppCompatActivity() {
+class ReceiveCall : AppCompatActivity() {
 
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_calling)
+        setContentView(R.layout.activity_receivecall)
 
         val answerButton: Button = findViewById(R.id.calling_answer)
         val hangupButton: Button = findViewById(R.id.calling_hangup)
