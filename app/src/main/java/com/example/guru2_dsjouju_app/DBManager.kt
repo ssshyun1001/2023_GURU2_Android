@@ -13,7 +13,11 @@ class DBManager(
     version: Int
 ) : SQLiteOpenHelper(context, name, factory, version) {
 
+
+
     override fun onCreate(db: SQLiteDatabase?) {
+
+
         // contacts 테이블 생성
         db!!.execSQL(
             "CREATE TABLE contacts (" +
@@ -38,15 +42,15 @@ class DBManager(
 }
 
 
-class ContactsDAO(context: Context) {
+class ContactsDAO(private val context: Context, private val loginID: String) {
 
     private val dbManager = DBManager(context, "contactsDB", null, 1)
 
     // 연락처 추가 메서드
-    fun insertContact(id: String, phone: String) {
+    fun insertContact(phone: String) {
         val db = dbManager.writableDatabase
         val values = ContentValues().apply {
-            put("id", id)
+            put("id", loginID)
             put("phone", phone)
         }
         db.insert("contacts", null, values)
@@ -54,32 +58,31 @@ class ContactsDAO(context: Context) {
     }
 
     // 연락처 삭제 메서드
-    fun deleteContact(id: String, phone: String): Int {
+    fun deleteContact(phone: String): Int {
         val db = dbManager.writableDatabase
-        val result = db.delete("contacts", "id = ? AND phone = ?", arrayOf(id, phone))
+        val result = db.delete("contacts", "id = ? AND phone = ?", arrayOf(loginID, phone))
         db.close()
         return result
     }
 
     // 연락처 수정 메서드
-    fun updateContact(id: String, oldPhone: String, newPhone: String) {
+    fun updateContact(oldPhone: String, newPhone: String) {
         val db = dbManager.writableDatabase
         val values = ContentValues().apply {
             put("phone", newPhone)
         }
-        db.update("contacts", values, "id = ? AND phone = ?", arrayOf(id, oldPhone))
+        db.update("contacts", values, "id = ? AND phone = ?", arrayOf(loginID, oldPhone))
         db.close()
     }
 
-
     // 특정 ID에 해당하는 연락처 조회 메서드
-    fun getContactsById(id: String): List<Contact> {
+    fun getContactsById(): List<Contact> {
         val db = dbManager.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM contacts WHERE id = ?", arrayOf(id))
+        val cursor: Cursor = db.rawQuery("SELECT * FROM contacts WHERE id = ?", arrayOf(loginID))
         val contacts = mutableListOf<Contact>()
         while (cursor.moveToNext()) {
             val phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"))
-            contacts.add(Contact(id, phone))
+            contacts.add(Contact(loginID, phone))
         }
         cursor.close()
         db.close()

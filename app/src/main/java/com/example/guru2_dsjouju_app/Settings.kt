@@ -83,7 +83,7 @@ class Settings : AppCompatActivity() {
     }
 
     private fun initializeDatabase() {
-        contactsDAO = ContactsDAO(this)
+        contactsDAO = ContactsDAO(this, loginID)
     }
 
     private fun initializePreferences() {
@@ -130,7 +130,7 @@ class Settings : AppCompatActivity() {
 
     private fun updateContactList() {
         contactListLayout.removeAllViews()
-        val contacts = contactsDAO.getContactsById(loginID)
+        val contacts = contactsDAO.getContactsById()
         contacts.forEach { contact ->
             val textView = TextView(this).apply {
                 text = "ID: ${contact.id}, Phone: ${contact.phone}"
@@ -144,8 +144,7 @@ class Settings : AppCompatActivity() {
     private fun addContact() {
         val phone = editTextContact.text.toString().trim()
         if (phone.isNotEmpty()) {
-            val id = loginID
-            contactsDAO.insertContact(id, phone)
+            contactsDAO.insertContact(phone)
             editTextContact.text.clear()
             updateContactList()
         } else {
@@ -155,9 +154,8 @@ class Settings : AppCompatActivity() {
 
     private fun deleteContact() {
         val phone = editTextContact.text.toString()
-        val id = loginID
         if (phone.isNotEmpty()) {
-            val rowsDeleted = contactsDAO.deleteContact(id, phone) // 삭제된 레코드 수를 반환 받음
+            val rowsDeleted = contactsDAO.deleteContact(phone) // 삭제된 레코드 수를 반환 받음
             if (rowsDeleted > 0) {
                 // 삭제가 성공한 경우
                 updateContactList()
@@ -169,7 +167,6 @@ class Settings : AppCompatActivity() {
             Toast.makeText(this, "전화번호를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     private fun saveRadioButtonState() {
         val selectedId = radioGroup.checkedRadioButtonId
@@ -291,3 +288,4 @@ class Settings : AppCompatActivity() {
         finish()  // 현재 Settings 액티비티 종료
     }
 }
+
