@@ -60,7 +60,7 @@ class Login : AppCompatActivity() {
         val etSignupPassword = view.findViewById<EditText>(R.id.signupPW)
         val etSignupPhone = view.findViewById<EditText>(R.id.textPhone)
         val btnSignupSubmit = view.findViewById<Button>(R.id.signUp)
-        val backButton = view.findViewById<ImageButton>(R.id.backButton)
+        val backButton = view.findViewById<Button>(R.id.signup_back_btn)
 
         btnCheckId.setOnClickListener {
             val id = etSignupId.text.toString().trim()
