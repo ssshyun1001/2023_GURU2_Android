@@ -2,13 +2,14 @@ package com.example.guru2_dsjouju_app
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
-import android.telephony.SmsManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import android.telephony.SmsManager
 
 // SMS 전송 클래스
 class SendMessage(private val context: Context, private val loginID: String) {
@@ -30,16 +31,14 @@ class SendMessage(private val context: Context, private val loginID: String) {
         }
     }
 
-    private fun getSavedMessage(): String {
-        val prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        return prefs.getString("SAVED_MESSAGE", "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!") ?:
-        "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
-    }
-
     private fun sendSMS(location: Location) {
         val dao = ContactsDAO(context, loginID)
         val contacts = dao.getContactsById()
-        val savedMessage = getSavedMessage()
+
+        // SharedPreferences에서 커스텀 메시지를 불러오기
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("SettingsPrefs", Context.MODE_PRIVATE)
+        val savedMessage = sharedPreferences.getString("sos_message", "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!") ?: "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
+
         val message = "$savedMessage\n현재 위치: https://maps.google.com/?q=${location.latitude},${location.longitude}"
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {

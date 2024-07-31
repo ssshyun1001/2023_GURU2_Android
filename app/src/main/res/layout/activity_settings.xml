@@ -48,7 +48,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- 긴급 연락처 설정 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -95,7 +94,7 @@
                     android:textSize="16sp"/>
             </LinearLayout>
 
-            <!-- 사이렌 소리 설정 -->
+            <!-- 사이렌 종류 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -153,7 +152,7 @@
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
-            <!-- 위치 전송 주기 설정 -->
+            <!-- Location Update Frequency Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -170,7 +169,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"/>
 
-            <!-- SOS 메세지 설정 -->
+            <!-- SOS Message Settings Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -179,55 +178,54 @@
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"/>
 
-            <LinearLayout
-                android:id="@+id/sos_message_list"
+            <TextView
+                android:id="@+id/sos_message_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:orientation="vertical"/>
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:textSize="16sp"/>
 
             <EditText
                 android:id="@+id/edit_text_sosmessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="SOS 메세지 입력"
+                android:hint="SOS 메세지"
                 android:inputType="textMultiLine"
-                android:layout_marginTop="4dp"/>
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp">
-
+                android:layout_marginTop="8dp">
 
                 <Button
-                    android:id="@+id/research_sos_message_button"
+                    android:id="@+id/sos_init_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="메세지 조회"
-                    android:textSize="12sp"
+                    android:text="초기화"
+                    android:textSize="16sp"/>
+
+                <Button
+                    android:id="@+id/sos_edit_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="수정"
+                    android:textSize="16sp"
                     android:layout_marginStart="8dp"/>
 
                 <Button
-                    android:id="@+id/save_sos_message_button"
+                    android:id="@+id/sos_save_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="메세지 저장"
-                    android:textSize="12sp"/>
-
-                <Button
-                    android:id="@+id/reset_sos_message_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="메세지 초기화"
-                    android:textSize="12sp"
+                    android:text="저장"
+                    android:textSize="16sp"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
-            <!-- 로그아웃 설정 -->
+            <!-- Logout Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
