@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -80,6 +79,8 @@ class Login : AppCompatActivity() {
         val btnSignupSubmit = view.findViewById<Button>(R.id.signUp)
         val backButton = view.findViewById<Button>(R.id.signup_back_btn)
 
+        var isIdChecked = false  // 중복 확인 여부를 저장하는 변수
+
         // 아이디 입력 필드에 TextWatcher 추가
         etSignupId.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -89,6 +90,7 @@ class Login : AppCompatActivity() {
                 if (idLength < 8) {
                     etSignupId.error = "자릿수를 만족하는 아이디를 작성하시오."
                 }
+                isIdChecked = false  // 아이디를 수정하면 다시 중복 확인이 필요함
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -124,8 +126,10 @@ class Login : AppCompatActivity() {
             val id = etSignupId.text.toString().trim()
             if (userDAO.checkIfIdExists(id)) {
                 Toast.makeText(this, "이미 사용 중인 아이디입니다.", Toast.LENGTH_SHORT).show()
+                isIdChecked = false  // 중복 확인 실패
             } else {
                 Toast.makeText(this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show()
+                isIdChecked = true  // 중복 확인 성공
             }
         }
 
@@ -140,7 +144,9 @@ class Login : AppCompatActivity() {
             val password = etSignupPassword.text.toString().trim()
             val phone = etSignupPhone.text.toString().trim()
             if (id.isNotEmpty() && password.isNotEmpty() && phone.isNotEmpty()) {
-                if (id.length in 8..12 && password.length in 8..12) {
+                if (!isIdChecked) {
+                    Toast.makeText(this, "아이디 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show()
+                } else if (id.length in 8..12 && password.length in 8..12) {
                     if (userDAO.insertUser(id, password, phone)) {
                         Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
                         dialog.dismiss()
