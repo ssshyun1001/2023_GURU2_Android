@@ -297,10 +297,11 @@ class Settings : AppCompatActivity() {
     }
 
     private fun logout() {
-        // 로그인 화면으로 이동
-        val intent = Intent(this, Login::class.java)
-        startActivity(intent)
-        finish()  // 현재 Settings 액티비티 종료
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        prefs.edit().remove("LOGIN_ID").apply()
+
+        startActivity(Intent(this, Login::class.java))
+        finish()
     }
 }
 
