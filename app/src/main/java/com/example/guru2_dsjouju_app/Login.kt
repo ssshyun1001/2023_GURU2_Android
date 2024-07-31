@@ -20,13 +20,17 @@ class Login : AppCompatActivity() {
     private lateinit var btnSignup: Button
     private lateinit var userDAO: UserDAO
 
-    private fun saveLoginID(id: String) {
-        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        prefs.edit().putString("LOGIN_ID", id).apply()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 자동 로그인 체크
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        if (prefs.contains("LOGIN_ID")) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         loginID = findViewById(R.id.ID)
@@ -57,6 +61,11 @@ class Login : AppCompatActivity() {
         }
 
         btnSignup.setOnClickListener { showSignupDialog() }
+    }
+
+    private fun saveLoginID(loginID: String) {
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("LOGIN_ID", loginID).apply()
     }
 
     private fun showSignupDialog() {
