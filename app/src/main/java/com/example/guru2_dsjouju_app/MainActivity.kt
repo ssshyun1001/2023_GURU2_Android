@@ -115,8 +115,9 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_settings -> {
-                    // 설정 항목 클릭 시 Settings로 이동
+                    // Settings 액티비티로 이동하면서 LOGIN_ID를 전달합니다.
                     val intent = Intent(this, Settings::class.java)
+                    intent.putExtra("LOGIN_ID", loginID)
                     startActivity(intent)
                     true
                 }
