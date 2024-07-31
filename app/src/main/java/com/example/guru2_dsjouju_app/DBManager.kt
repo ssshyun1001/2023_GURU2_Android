@@ -23,6 +23,12 @@ class DBManager(
                     "phone TEXT, " +
                     "PRIMARY KEY (id, phone))"
         )
+        db.execSQL(
+            "CREATE TABLE messages (" +
+                    "id TEXT," +
+                    "message TEXT," +
+                    "PRIMARY KEY(id))"
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -86,52 +92,53 @@ class ContactsDAO(private val context: Context, private val loginID: String) {
 
 
 
-//class MessagesDAO(context: Context) {
-//
-//    private val dbManager = DBManager(context, "messagesDB", null, 1)
-//
-//    // 메시지 추가 메서드
-//    fun insertMessage(message: String) {
-//        val db = dbManager.writableDatabase
-//        val values = ContentValues().apply {
-//            put("message", message)
-//        }
-//        db.insert("messages", null, values)
-//        db.close()
-//    }
-//}
-//    // 메시지 삭제 메서드
-//    fun deleteMessage(id: Int) {
-//        val db = dbManager.writableDatabase
-//        db.delete("messages", "id = ?", arrayOf(id.toString()))
-//        db.close()
-//    }
-//
-//    // 메시지 수정 메서드
-//    fun updateMessage(id: Int, newMessage: String) {
-//        val db = dbManager.writableDatabase
-//        val values = ContentValues().apply {
-//            put("message", newMessage)
-//        }
-//        db.update("messages", values, "id = ?", arrayOf(id.toString()))
-//        db.close()
-//    }
-//
-//    // 모든 메시지 조회 메서드
-//    fun getAllMessages(): List<Message> {
-//        val db = dbManager.readableDatabase
-//        val cursor: Cursor = db.rawQuery("SELECT * FROM messages", null)
-//        val messages = mutableListOf<Message>()
-//        while (cursor.moveToNext()) {
-//            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-//            val message = cursor.getString(cursor.getColumnIndexOrThrow("message"))
-//            messages.add(Message(id, message))
-//        }
-//        cursor.close()
-//        db.close()
-//        return messages
-//    }
-//
-//    // 메시지 클래스
-//    data class Message(val id: Int, val message: String)
-//}
+class MessagesDAO(private val context: Context, private val loginID: String) {
+
+    private val dbManager = DBManager(context, "messagesDB", null, 1)
+
+    // 메시지 수정 메서드
+    fun updateMessage(newMessage: String) {
+        val db = dbManager.writableDatabase
+        val values = ContentValues().apply {
+            put("message", newMessage)
+        }
+        db.update("messages", values, "id = ?", arrayOf(loginID))
+        db.close()
+    }
+
+    // 로그인 ID에 해당하는 모든 메시지 조회 메서드
+    fun getMessagesById(): List<Message> {
+        val db = dbManager.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM messages WHERE id = ?", arrayOf(loginID))
+        val messages = mutableListOf<Message>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+            val message = cursor.getString(cursor.getColumnIndexOrThrow("message"))
+            messages.add(Message(id, message))
+        }
+        cursor.close()
+        db.close()
+        return messages
+    }
+
+    // 메시지 초기화 메서드
+    fun resetMessages() {
+        val db = dbManager.writableDatabase
+
+        // 기존 메시지 삭제
+        db.delete("messages", "id = ?", arrayOf(loginID))
+
+        // 기본 SOS 메시지로 초기화
+        val defaultMessage = "SOS 메시지: 지금 사용자가 위험한 상황이에요. 도와주세요!"
+        val values = ContentValues().apply {
+            put("id", loginID)
+            put("message", defaultMessage)
+        }
+        db.insert("messages", null, values)
+
+        db.close()
+    }
+
+    // 메시지 클래스
+    data class Message(val id: String, val message: String)
+}

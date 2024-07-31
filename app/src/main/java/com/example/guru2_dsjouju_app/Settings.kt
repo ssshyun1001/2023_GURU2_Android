@@ -7,6 +7,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -14,42 +15,47 @@ import androidx.appcompat.widget.PopupMenu
 
 class Settings : AppCompatActivity() {
 
-    lateinit var setOptionMenuBtn: ImageButton
-
+    private lateinit var setOptionMenuBtn: ImageButton
     private lateinit var sharedPreferences: SharedPreferences
-
     private lateinit var addContactButton: Button
     private lateinit var deleteContactButton: Button
     private lateinit var contactListLayout: LinearLayout
     private lateinit var editTextContact: EditText
-
-    private lateinit var contactsDAO: ContactsDAO
-
     private lateinit var radioGroup: RadioGroup
     private lateinit var applyButton: Button
     private lateinit var testButton: Button
-
     private lateinit var spinner: Spinner
-
     private lateinit var editTextSosMessage: EditText
+    private lateinit var SOSListLayout : LinearLayout
     private lateinit var sosMessageTextView: TextView
-    private lateinit var sosInitButton: Button
-    private lateinit var sosEditButton: Button
+    private lateinit var sosResetButton: Button
     private lateinit var sosSaveButton: Button
-
+    private lateinit var sosResearchButton: Button // 추가된 버튼
     private lateinit var logoutButton: Button
-
-    private var isEditing = false
-    private var originalSosMessage: String = ""
-
     private lateinit var loginID: String
+    private lateinit var contactsDAO: ContactsDAO
+    private lateinit var messagesDAO: MessagesDAO
+    private var isEditing = false
+    private var originalSosMessage: String = "SOS 메시지: 지금 사용자가 위험한 상황이에요. 도와주세요!"
+
+
+
+    private fun getLoginID(): String? {
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        return prefs.getString("LOGIN_ID", null)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // loginID를 인텐트에서 추출
+        // Intent에서 loginID를 가져옴
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
+
+        // loginID가 비어있으면 SharedPreferences에서 가져옴
+        if (loginID.isEmpty()) {
+            loginID = getLoginID() ?: ""
+        }
 
         initializeUI()
         initializeDatabase()
@@ -60,48 +66,26 @@ class Settings : AppCompatActivity() {
 
     private fun initializeUI() {
         setOptionMenuBtn = findViewById(R.id.set_option_menu_btn)
-
         addContactButton = findViewById(R.id.add_contact_button)
         deleteContactButton = findViewById(R.id.delete_contact_button)
         contactListLayout = findViewById(R.id.contact_list)
         editTextContact = findViewById(R.id.edit_text_contact)
-
         radioGroup = findViewById(R.id.radio_group_siren)
         applyButton = findViewById(R.id.siren_apply_button)
         testButton = findViewById(R.id.siren_test_button)
-
         spinner = findViewById(R.id.spinner_location_update_frequency)
-
         editTextSosMessage = findViewById(R.id.edit_text_sosmessage)
-        sosMessageTextView = findViewById(R.id.sos_message_text_view)
-        sosInitButton = findViewById(R.id.sos_init_button)
-        sosEditButton = findViewById(R.id.sos_edit_button)
-        sosSaveButton = findViewById(R.id.sos_save_button)
-
+        SOSListLayout = findViewById(R.id.sos_message_list)
+        sosMessageTextView = findViewById(R.id.edit_text_sosmessage) // 올바른 ID 확인 필요
+        sosResetButton = findViewById(R.id.reset_sos_message_button)
+        sosSaveButton = findViewById(R.id.save_sos_message_button)
+        sosResearchButton = findViewById(R.id.research_sos_message_button) // 올바른 ID 확인 필요
         logoutButton = findViewById(R.id.logout_button)
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedFrequency = parent.getItemAtPosition(position).toString()
-                val frequencyMillis = when (selectedFrequency) {
-                    "1분" -> 1 * 60 * 1000L
-                    "2분" -> 2 * 60 * 1000L
-                    "3분" -> 3 * 60 * 1000L
-                    "4분" -> 4 * 60 * 1000L
-                    "5분" -> 5 * 60 * 1000L
-                    else -> 1 * 60 * 1000L
-                }
-                saveSpinnerSelection(selectedFrequency)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // 아무 것도 선택되지 않음
-            }
-        }
     }
 
     private fun initializeDatabase() {
         contactsDAO = ContactsDAO(this, loginID)
+        messagesDAO = MessagesDAO(this, loginID)
     }
 
     private fun initializePreferences() {
@@ -114,9 +98,9 @@ class Settings : AppCompatActivity() {
         testButton.setOnClickListener { testSelectedSiren() }
         addContactButton.setOnClickListener { addContact() }
         deleteContactButton.setOnClickListener { deleteContact() }
-        sosInitButton.setOnClickListener { resetSosMessage() }
-        sosEditButton.setOnClickListener { toggleEditMode() }
         sosSaveButton.setOnClickListener { saveSosMessage() }
+        sosResetButton.setOnClickListener { resetSosMessage() }
+        sosResearchButton.setOnClickListener { loadSosMessage() } // 추가된 부분
         logoutButton.setOnClickListener { logout() }
     }
 
@@ -151,7 +135,7 @@ class Settings : AppCompatActivity() {
         val contacts = contactsDAO.getContactsById()
         contacts.forEach { contact ->
             val textView = TextView(this).apply {
-                "ID: ${contact.id}, Phone: ${contact.phone}".also { text = it }
+                text = "ID: ${contact.id}, Phone: ${contact.phone}"
                 textSize = 16f
                 setPadding(0, 8, 0, 8)
             }
@@ -173,12 +157,10 @@ class Settings : AppCompatActivity() {
     private fun deleteContact() {
         val phone = editTextContact.text.toString()
         if (phone.isNotEmpty()) {
-            val rowsDeleted = contactsDAO.deleteContact(phone) // 삭제된 레코드 수를 반환 받음
+            val rowsDeleted = contactsDAO.deleteContact(phone)
             if (rowsDeleted > 0) {
-                // 삭제가 성공한 경우
                 updateContactList()
             } else {
-                // 삭제된 레코드가 없는 경우, 즉 전화번호가 존재하지 않는 경우
                 Toast.makeText(this, "존재하지 않는 전화번호입니다.", Toast.LENGTH_SHORT).show()
             }
         } else {
@@ -202,9 +184,6 @@ class Settings : AppCompatActivity() {
 
     private fun testSelectedSiren() {
         val selectedId = radioGroup.checkedRadioButtonId
-        val selectedRadioButton = findViewById<RadioButton>(selectedId)
-        val sirenText = selectedRadioButton?.text.toString()
-
         val sirenType = when (selectedId) {
             R.id.radio_siren1 -> R.raw.police_siren
             R.id.radio_siren2 -> R.raw.fire_trucks_siren
@@ -212,16 +191,15 @@ class Settings : AppCompatActivity() {
             else -> return
         }
 
-        // MediaPlayer를 사용하여 사이렌 소리 재생
         val mediaPlayer = MediaPlayer.create(this, sirenType)
         mediaPlayer.start()
 
-        // 3초 후에 소리 멈추기
         Handler(Looper.getMainLooper()).postDelayed({
             mediaPlayer.stop()
             mediaPlayer.release()
         }, 3000)
 
+        val sirenText = findViewById<RadioButton>(selectedId)?.text.toString()
         Toast.makeText(this, "현재 사이렌 소리: $sirenText", Toast.LENGTH_SHORT).show()
     }
 
@@ -244,63 +222,46 @@ class Settings : AppCompatActivity() {
             .apply()
     }
 
-    private fun resetSosMessage() {
-        val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
-        sosMessageTextView.text = defaultMessage
-        editTextSosMessage.setText(defaultMessage)
-        sharedPreferences.edit()
-            .putString("sos_message", defaultMessage)
-            .apply()
-    }
-
-    private fun toggleEditMode() {
-        if (isEditing) {
-            sosMessageTextView.visibility = View.VISIBLE
-            editTextSosMessage.visibility = View.GONE
-            sosSaveButton.visibility = View.GONE
-            sosEditButton.text = "수정"
-            editTextSosMessage.setText(originalSosMessage)
-        } else {
-            originalSosMessage = sosMessageTextView.text.toString()
-            sosMessageTextView.visibility = View.GONE
-            editTextSosMessage.visibility = View.VISIBLE
-            sosSaveButton.visibility = View.VISIBLE
-            sosEditButton.text = "취소"
-        }
-        isEditing = !isEditing
-    }
-
     private fun saveSosMessage() {
-        val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
-        val newMessage = editTextSosMessage.text.toString()
-        if (newMessage.isNotBlank()) {
+        val newMessage = editTextSosMessage.text.toString().trim()
+        if (newMessage.isNotEmpty()) {
+            messagesDAO.updateMessage(newMessage)
             sosMessageTextView.text = newMessage
-            sharedPreferences.edit()
-                .putString("sos_message", newMessage)
-                .apply()
-            toggleEditMode()
-
-            // SendMessage 인스턴스를 생성하면서 savedMessage 전달하기
-            val savedMessage = sharedPreferences.getString("sos_message", defaultMessage)
-            val sendMessage = SendMessage(this, "loginID", savedMessage ?: defaultMessage)
-            sendMessage.sendLocationSMS()
+            Toast.makeText(this, "SOS 메시지가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+            originalSosMessage = newMessage
         } else {
-            Toast.makeText(this, "메시지를 입력하세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "메시지가 입력되지 않았습니다. 메시지를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun resetSosMessage() {
+        messagesDAO.resetMessages()
+        loadSosMessage()
     }
 
     private fun loadSosMessage() {
-        val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
-        val savedMessage = sharedPreferences.getString("sos_message", defaultMessage)
-        sosMessageTextView.text = savedMessage
-        editTextSosMessage.setText(savedMessage)
+        val messages = messagesDAO.getMessagesById()
+        val latestMessage = messages.lastOrNull()?.message ?: "SOS 메시지: 지금 사용자가 위험한 상황이에요. 도와주세요!"
+        editTextSosMessage.setText(latestMessage)
+        sosMessageTextView.text = latestMessage
+        originalSosMessage = latestMessage
     }
 
+    private fun saveMessage(message: String) {
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("SAVED_MESSAGE", message).apply()
+    }
+
+
+
     private fun logout() {
-        // 로그인 화면으로 이동
-        val intent = Intent(this, Login::class.java)
-        startActivity(intent)
-        finish()  // 현재 Settings 액티비티 종료
+
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        prefs.edit().remove("LOGIN_ID").apply()
+
+        startActivity(Intent(this, Login::class.java))
+        finish()
     }
 }
+
 

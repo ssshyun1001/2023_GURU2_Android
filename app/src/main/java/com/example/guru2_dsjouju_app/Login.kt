@@ -20,6 +20,11 @@ class Login : AppCompatActivity() {
     private lateinit var btnSignup: Button
     private lateinit var userDAO: UserDAO
 
+    private fun saveLoginID(id: String) {
+        val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("LOGIN_ID", id).apply()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -36,6 +41,9 @@ class Login : AppCompatActivity() {
 
             if (userDAO.checkUser(id, password)) {
                 Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
+
+                // 로그인 ID를 SharedPreferences에 저장
+                saveLoginID(id)
 
                 // LOGIN_ID를 MainActivity로 전달
                 val intent = Intent(this, MainActivity::class.java)
