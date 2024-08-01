@@ -1,6 +1,11 @@
 package com.example.guru2_dsjouju_app
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.IntentService
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -27,10 +32,62 @@ import com.google.maps.android.heatmaps.WeightedLatLng
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.Query
+import com.google.gson.annotations.SerializedName
+import org.json.JSONArray
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.InputStream
+
+interface ConvenienceStoreService {
+    @GET("getConvenienceStore")
+    fun getConvenienceStores(
+        @Query("serviceKey") serviceKey: String,
+        @Query("pageNo") pageNo: Int,
+        @Query("numOfRows") numOfRows: Int,
+        @Query("type") type: String
+    ): Call<ConvenienceStoreResponse>
+}
+
+data class ConvenienceStoreResponse(
+    @SerializedName("response")
+    val response: ConvenienceStoreResponseBody
+) {
+    data class ConvenienceStoreResponseBody(
+        @SerializedName("body")
+        val body: Body
+    ) {
+        data class Body(
+            @SerializedName("items")
+            val items: Items
+        ) {
+            data class Items(
+                @SerializedName("item")
+                val item: List<ConvenienceStore>
+            )
+        }
+    }
+}
+
+data class ConvenienceStore(
+    @SerializedName("CONV_STORE_NAME")
+    val name: String,
+    @SerializedName("CONV_STORE_ADDR")
+    val address: String,
+    @SerializedName("LAT")
+    val latitude: Double,
+    @SerializedName("LNG")
+    val longitude: Double
+)
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
+
     //private lateinit var zoomControls: ZoomControls
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
@@ -43,18 +100,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Initialize location permission launcher
-        locationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                getCurrentLocation()
-            } else {
-                Toast.makeText(this, "Location permission required", Toast.LENGTH_LONG).show()
-                initializeMap()
-                addPoliceStationMarkers()
-                createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
+        locationPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    getCurrentLocation()
+                } else {
+                    Toast.makeText(this, "Location permission required", Toast.LENGTH_LONG)
+                        .show()
+                    initializeMap()
+                    addPoliceStationMarkers()
+                    createHeatmap(
+                        LatLng(
+                            37.5665,
+                            126.9780
+                        )
+                    ) // Use default location (Seoul) for heatmap
+                }
             }
-        }
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
             ?: throw IllegalStateException("Map Fragment not found")
 
@@ -62,6 +127,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMarkerClickListener(this)
@@ -69,20 +135,27 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
                     addPoliceStationMarkers()
                     createHeatmap(currentLatLng)
-                    addConvenienceStoreMarkers()
                 } else {
                     Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
                     initializeMap()
                     addPoliceStationMarkers()
-                    createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
-                    addConvenienceStoreMarkers()
+                    createHeatmap(
+                        LatLng(
+                            37.5665,
+                            126.9780
+                        )
+                    ) // Use default location (Seoul) for heatmap
                 }
             }
         }
@@ -92,17 +165,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         val seoul = LatLng(37.5665, 126.9780)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12.0f))
         addPoliceStationMarkers()
-        addConvenienceStoreMarkers()
+        loadCctvData()
+        loadConvenienceStores()
+        createHeatmap(seoul)
 
         // Zoom 컨트롤 설정
         // setupZoomControls()
     }
 
-    // Implement the onMarkerClick method to handle marker clicks
     override fun onMarkerClick(marker: Marker): Boolean {
-        val policeStation = marker.tag as? PoliceStation
+        val policeStation = marker.tag as? com.example.guru2_dsjouju_app.PoliceStation
+        val cctv = marker.tag as? Cctv
         val convenienceStore = marker.tag as? ConvenienceStore
+
         policeStation?.let {
+            Toast.makeText(this, "${it.name}\n${it.address}", Toast.LENGTH_SHORT).show()
+        }
+        cctv?.let {
             Toast.makeText(this, "${it.name}\n${it.address}", Toast.LENGTH_SHORT).show()
         }
         convenienceStore?.let {
@@ -112,16 +191,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     /*
-    private fun setupZoomControls() {
-        zoomControls.setOnZoomInClickListener {
-            mMap.animateCamera(CameraUpdateFactory.zoomIn())
-        }
+private fun setupZoomControls() {
+zoomControls.setOnZoomInClickListener {
+mMap.animateCamera(CameraUpdateFactory.zoomIn())
+}
 
-        zoomControls.setOnZoomOutClickListener {
-            mMap.animateCamera(CameraUpdateFactory.zoomOut())
-        }
-    }
-     */
+zoomControls.setOnZoomOutClickListener {
+mMap.animateCamera(CameraUpdateFactory.zoomOut())
+}
+}
+*/
 
     private fun addPoliceStationMarkers() {
         // 경찰서 데이터 리스트
@@ -171,26 +250,64 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
     }
 
-    private fun addConvenienceStoreMarkers() {
-        // Convenience store data list
-        val convenienceStores = loadConvenienceStoresFromJson()
+    data class Cctv(val name: String, val address: String, val latitude: Double, val longitude: Double)
 
-        convenienceStores.forEach { store ->
-            val position = LatLng(store.latitude, store.longitude)
+    private fun addCctvMarkers(cctvs: List<Cctv>) {
+        for (cctv in cctvs) {
+            val position = LatLng(cctv.latitude, cctv.longitude)
             val markerOptions = MarkerOptions()
                 .position(position)
-                .title(store.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // Different color for convenience stores
+                .title(cctv.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+
             val marker = mMap.addMarker(markerOptions)
-            marker?.tag = store
+            marker?.tag = cctv
         }
     }
 
+    private fun loadCctvData(): MutableList<Cctv> {
+        val cctvs = mutableListOf<Cctv>()
+        try {
+            val inputStream: InputStream = assets.open("cctv_data.json")
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            val json = String(buffer, Charsets.UTF_8)
+
+            val jsonArray = JSONArray(json)
+
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                val name = jsonObject.getString("name")
+                val address = jsonObject.getString("address")
+                val latitude = jsonObject.getDouble("latitude")
+                val longitude = jsonObject.getDouble("longitude")
+
+                val cctv = Cctv(name, address, latitude, longitude)
+                cctvs.add(cctv)
+            }
+
+            addCctvMarkers(cctvs)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        return cctvs
+    }
+
     private fun createHeatmap(currentLocation: LatLng) {
-        val data = loadDataFromJson()
+        val data = loadCctvData()
         val filteredData = data.filter { location ->
             val distance = FloatArray(1)
-            Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude, distance)
+            Location.distanceBetween(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                location.latitude,
+                location.longitude,
+                distance
+            )
             distance[0] < 5000 // 5km radius
         }
 
@@ -199,7 +316,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             return
         }
 
-        val weightedLatLngs = filteredData.map { WeightedLatLng(it, 1.0) }
+        val weightedLatLngs =
+            filteredData.map { WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0) }
         val provider = HeatmapTileProvider.Builder()
             .weightedData(weightedLatLngs)
             .build()
@@ -207,7 +325,81 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mMap.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
 
-    private fun loadDataFromJson(): List<LatLng> {
+    private val retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://safemap.go.kr/openApiService/data/") // 기본 URL
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    private val service by lazy {
+        retrofit.create(ConvenienceStoreService::class.java)
+    }
+    private val serviceKey = "c8f9c9e669af4b529e96"
+
+    private fun loadConvenienceStores() {
+        service.getConvenienceStores(serviceKey, 1, 100, "json")
+            .enqueue(object : Callback<ConvenienceStoreResponse> {
+                override fun onResponse(
+                    call: Call<ConvenienceStoreResponse>,
+                    response: Response<ConvenienceStoreResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.response?.body?.items?.item?.let { stores ->
+                            addConvenienceStoreMarkers(stores)
+                        }
+                    } else {
+                        Log.e("MapActivity", "API call failed: ${response.errorBody()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<ConvenienceStoreResponse>, t: Throwable) {
+                    Log.e("MapActivity", "API call failed: ${t.message}")
+                    Toast.makeText(
+                        this@MapActivity,
+                        "Failed to load convenience stores",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+    }
+
+    private fun addConvenienceStoreMarkers(stores: List<ConvenienceStore>) {
+        stores.forEach { store ->
+            val position = LatLng(store.latitude, store.longitude)
+            val markerOptions = MarkerOptions()
+                .position(position)
+                .title(store.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // Color for convenience stores
+            mMap.addMarker(markerOptions)
+        }
+    }
+}
+class PackageAddedReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        // BroadcastReceiver에서 메인 스레드에서 수행할 작업 최소화
+        if (intent?.action == Intent.ACTION_PACKAGE_ADDED) {
+            // 긴 작업은 서비스나 워커로 이동
+            context?.let {
+                val serviceIntent = Intent(it, HandlePackageAddedService::class.java)
+                serviceIntent.putExtra("packageName", intent.data?.encodedSchemeSpecificPart)
+                it.startService(serviceIntent)
+            }
+        }
+    }
+}
+
+class HandlePackageAddedService : IntentService("HandlePackageAddedService") {
+    override fun onHandleIntent(intent: Intent?) {
+        // 백그라운드에서 작업 수행
+        val packageName = intent?.getStringExtra("packageName")
+        // 패키지 추가 처리 로직
+    }
+}
+
+
+        /*
+    fun loadDataFromJson(): List<LatLng> {
         val data = mutableListOf<LatLng>()
         try {
             val json = assets.open("cctv_data.json").bufferedReader().use { it.readText() }
@@ -228,30 +420,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         Log.d("MapActivity", "Loaded ${data.size} data points")
         return data
     }
-    private fun loadConvenienceStoresFromJson(): List<ConvenienceStore> {
-        val stores = mutableListOf<ConvenienceStore>()
-        try {
-            val json = assets.open("convenience_stores.json").bufferedReader().use { it.readText() }
-            val jsonObject = JSONObject(json)
-            val dataArray = jsonObject.getJSONArray("DATA")
 
-            for (i in 0 until dataArray.length()) {
-                val obj = dataArray.getJSONObject(i)
-                val name = obj.getString("NAME")
-                val address = obj.getString("ADDRESS")
-                val lat = obj.getDouble("LAT")
-                val lng = obj.getDouble("LNG")
-                stores.add(ConvenienceStore(name, address, lat, lng))
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        Log.d("MapActivity", "Loaded ${stores.size} convenience stores")
-        return stores
-    }
-
-    data class PoliceStation(val name: String, val address: String, val latitude: Double, val longitude: Double)
-    data class ConvenienceStore(val name: String, val address: String, val latitude: Double, val longitude: Double)
-}
+    data class PoliceStation(
+        val name: String,
+        val address: String,
+        val latitude: Double,
+        val longitude: Double
+    )*/

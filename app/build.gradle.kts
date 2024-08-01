@@ -54,6 +54,14 @@ dependencies {
     implementation(libs.play.services.location) // Location library
     implementation(libs.android.maps.utils) // Maps utils library
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // 추가: OkHttp Logging Interceptor (디버깅을 위해)
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.4")
+    //Google Play Services 라이브러리가 포함되어 있는지 확인
+    implementation("com.google.android.gms:play-services-maps:18.0.2")
+
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
