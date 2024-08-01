@@ -5,6 +5,7 @@
     <stroke
         android:width="1dp"
         android:color="#CCCCCC"/> <!-- 연한 회색 테두리 -->
+    <corners android:radius="500dp"/>
     <!-- 내부 여백 -->
     <padding
         android:left="16dp"
