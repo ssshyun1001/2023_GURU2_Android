@@ -7,6 +7,8 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -98,6 +100,38 @@ class Settings : AppCompatActivity() {
                 // 아무 것도 선택되지 않음
             }
         }
+
+        editTextSosMessage.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 텍스트를 바이트 배열로 변환하여 바이트 길이 확인
+                val byteLength = s?.toString()?.toByteArray(Charsets.UTF_8)?.size ?: 0
+                if (byteLength > 140) {
+                    // 바이트 길이가 140자를 초과하면 경고 메시지를 표시
+                    editTextSosMessage.error = "메시지 길이는 140 바이트를 초과할 수 없습니다."
+                } else {
+                    // 길이가 정상 범위일 때 에러 제거
+                    editTextSosMessage.error = null
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // 바이트 길이가 140자를 초과할 경우 초과된 부분을 삭제
+                if (s != null && s.toString().toByteArray(Charsets.UTF_8).size > 140) {
+                    val maxLength = 140
+                    var length = 0
+                    for (i in 0 until s.length) {
+                        val byteLength = s.subSequence(0, i + 1).toString().toByteArray(Charsets.UTF_8).size
+                        if (byteLength > maxLength) {
+                            s.delete(i, s.length)
+                            break
+                        }
+                        length = i + 1
+                    }
+                }
+            }
+        })
     }
 
     private fun initializeDatabase() {
@@ -173,12 +207,10 @@ class Settings : AppCompatActivity() {
     private fun deleteContact() {
         val phone = editTextContact.text.toString()
         if (phone.isNotEmpty()) {
-            val rowsDeleted = contactsDAO.deleteContact(phone) // 삭제된 레코드 수를 반환 받음
+            val rowsDeleted = contactsDAO.deleteContact(phone)
             if (rowsDeleted > 0) {
-                // 삭제가 성공한 경우
                 updateContactList()
             } else {
-                // 삭제된 레코드가 없는 경우, 즉 전화번호가 존재하지 않는 경우
                 Toast.makeText(this, "존재하지 않는 전화번호입니다.", Toast.LENGTH_SHORT).show()
             }
         } else {
@@ -281,8 +313,7 @@ class Settings : AppCompatActivity() {
             toggleEditMode()
 
             // SendMessage 인스턴스를 생성하면서 savedMessage 전달하기
-            val savedMessage = sharedPreferences.getString("sos_message", defaultMessage)
-            val sendMessage = SendMessage(this, "loginID")
+            val sendMessage = SendMessage(this, loginID)
             sendMessage.sendLocationSMS()
         } else {
             Toast.makeText(this, "메시지를 입력하세요.", Toast.LENGTH_SHORT).show()
