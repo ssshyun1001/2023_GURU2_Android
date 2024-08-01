@@ -45,7 +45,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStream
 
 interface ConvenienceStoreService {
-    @GET("getConvenienceStore")
+    @GET("getConvenienceStoreData.do")
     fun getConvenienceStores(
         @Query("serviceKey") serviceKey: String,
         @Query("pageNo") pageNo: Int,
@@ -287,6 +287,7 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
                 .icon(BitmapDescriptorFactory.defaultMarker()) // Use default marker
             val marker = mMap.addMarker(markerOptions)
             marker?.tag = station
+            Log.d("MapActivity", "Added Police Station Marker: ${station.name} at $position")
         }
     }
 
@@ -298,7 +299,7 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
             val markerOptions = MarkerOptions()
                 .position(position)
                 .title(cctv.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
 
             val marker = mMap.addMarker(markerOptions)
             marker?.tag = cctv
@@ -326,6 +327,10 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
 
                 val cctv = Cctv(name, address, latitude, longitude)
                 cctvs.add(cctv)
+                Log.d("MapActivity", "Loaded CCTV: $name at $latitude, $longitude")
+            }
+            if (cctvs.isEmpty()) {
+                Log.e("MapActivity", "No CCTV data found.")
             }
 
             addCctvMarkers(cctvs)
@@ -375,7 +380,7 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
     private val service by lazy {
         retrofit.create(ConvenienceStoreService::class.java)
     }
-    private val serviceKey = "c8f9c9e669af4b529e96"
+    private val serviceKey = "9BPONXOB-9BPO-9BPO-9BPO-9BPONXOB24"
 
     private fun loadConvenienceStores() {
         service.getConvenienceStores(serviceKey, 1, 100, "json")
