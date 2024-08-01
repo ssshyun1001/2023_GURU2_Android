@@ -18,8 +18,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginTop="16dp"
-            android:fontFamily="sans-serif"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/nanumsquare_round_eb"
             android:text="설정"
             android:textSize="36sp"
             android:textStyle="bold"/>
@@ -41,7 +41,9 @@
         android:paddingTop="16dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:paddingBottom="16dp">
+        android:paddingBottom="16dp"
+
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,8 +54,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="긴급 연락처"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="22sp"
+                android:textStyle="bold"
+                style="@style/custom_font"/>
 
             <LinearLayout
                 android:id="@+id/contact_list"
@@ -62,7 +65,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                style="@style/custom_font"/>
 
             <EditText
                 android:id="@+id/edit_text_contact"
@@ -70,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:hint="연락처 입력"
                 android:inputType="phone"
-                android:layout_marginTop="4dp"/>
+                android:layout_marginTop="4dp"
+                style="@style/custom_font"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,14 +89,16 @@
                     android:layout_height="wrap_content"
                     android:text="연락처 추가 +"
                     android:textSize="16sp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginEnd="8dp"
+                    style="@style/custom_font"/>
 
                 <Button
                     android:id="@+id/delete_contact_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="연락처 삭제 -"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    style="@style/custom_font"/>
             </LinearLayout>
 
             <!-- 사이렌 종류 -->
@@ -99,9 +106,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="사이렌 소리"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                style="@style/custom_font"/>
 
             <RadioGroup
                 android:id="@+id/radio_group_siren"
@@ -114,20 +122,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="경찰차"/>
+                    android:text="경찰차"
+                    style="@style/custom_font"/>
 
                 <RadioButton
                     android:id="@+id/radio_siren2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="소방차"/>
+                    android:text="소방차"
+                    style="@style/custom_font"/>
 
                 <RadioButton
                     android:id="@+id/radio_siren3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="구급차"/>
+                    android:text="구급차"
+                    style="@style/custom_font"/>
             </RadioGroup>
 
             <LinearLayout
@@ -141,7 +152,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="적용"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    style="@style/custom_font"/>
 
                 <Button
                     android:id="@+id/siren_test_button"
@@ -149,7 +161,8 @@
                     android:layout_height="wrap_content"
                     android:text="TEST"
                     android:textSize="16sp"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="8dp"
+                    style="@style/custom_font"/>
             </LinearLayout>
 
             <!-- Location Update Frequency Section -->
@@ -157,9 +170,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="위치 전송 주기"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                style="@style/custom_font"/>
 
             <Spinner
                 android:id="@+id/spinner_location_update_frequency"
@@ -167,16 +181,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"/>
+                android:layout_marginEnd="4dp"
+                android:padding="4dp"
+                style="@style/custom_font"/>
 
             <!-- SOS Message Settings Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SOS 메세지 설정"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                style="@style/custom_font"/>
 
             <TextView
                 android:id="@+id/sos_message_text_view"
@@ -185,7 +202,8 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                style="@style/custom_font"/>
 
             <EditText
                 android:id="@+id/edit_text_sosmessage"
@@ -193,6 +211,7 @@
                 android:layout_height="wrap_content"
                 android:hint="SOS 메세지"
                 android:inputType="textMultiLine"
+                style="@style/custom_font"
                 android:visibility="gone"/>
 
             <LinearLayout
@@ -206,6 +225,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="초기화"
+                    style="@style/custom_font"
                     android:textSize="16sp"/>
 
                 <Button
@@ -213,6 +233,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="수정"
+                    style="@style/custom_font"
                     android:textSize="16sp"
                     android:layout_marginStart="8dp"/>
 
@@ -221,6 +242,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="저장"
+                    style="@style/custom_font"
                     android:textSize="16sp"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
@@ -230,7 +252,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="자동 로그인 해제"
-                android:textSize="20sp"
+                android:textSize="22sp"
+                style="@style/custom_font"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"/>
 
@@ -244,7 +267,8 @@
                 android:backgroundTint="@color/light_gray"
                 android:text="로그아웃"
                 android:textStyle="bold"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                style="@style/custom_font"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

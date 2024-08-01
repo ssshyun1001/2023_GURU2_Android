@@ -16,7 +16,8 @@
         android:layout_marginTop="60dp"
         android:text="사이렌 작동중 ···"
         android:textStyle="bold"
-        android:textSize="36sp" />
+        android:textSize="36sp"
+        android:fontFamily="@font/nanumsquare_round_eb"/>
 
     <ImageButton
         android:id="@+id/toggleSirenButton"
@@ -24,7 +25,7 @@
         android:layout_height="285dp"
         android:layout_below="@id/sirenStatusText"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/button_sos_background"
         android:src="@drawable/app_icon_siren"
         android:scaleType="fitCenter"
@@ -40,7 +41,8 @@
         android:layout_marginTop="175dp"
         android:text="SOS 도움 요청"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:fontFamily="@font/nanumsquare_round_eb"/>
 
     <ImageButton
         android:id="@+id/sosButton"

@@ -62,7 +62,8 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
             android:text="로그인 Login"
-            android:textSize="16dp"/>
+            android:textSize="16dp"
+            style="@style/custom_font"/>
 
     </LinearLayout>
 
@@ -75,5 +76,6 @@
         android:padding="8dp"
         android:layout_below="@id/linearLayout_01"
         android:text="회원가입 / Sign Up"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:fontFamily="@font/nanumsquare_round_eb"/>
 </RelativeLayout>

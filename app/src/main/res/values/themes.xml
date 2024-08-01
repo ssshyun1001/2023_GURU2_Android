@@ -12,5 +12,9 @@
         <item name="android:colorBackground">@color/white</item>
     </style>
 
+    <style name="custom_font">
+        <item name="android:fontFamily">@font/nanumsquare_round_b</item>
+    </style>
+
     <style name="Theme.GURU2_DSJouju_App" parent="Base.Theme.GURU2_DSJouju_App" />
 </resources>
