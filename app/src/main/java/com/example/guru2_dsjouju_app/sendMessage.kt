@@ -37,7 +37,7 @@ class SendMessage(private val context: Context, private val loginID: String) {
         val contacts = dao.getContactsById()
 
         // SharedPreferences에서 커스텀 메시지를 불러오기
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences("SirenPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("SettingsPrefs", Context.MODE_PRIVATE)
         val savedMessage = sharedPreferences.getString("sos_message", "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!") ?: "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
 
         val message = "현재 위치: https://maps.google.com/?q=${location.latitude},${location.longitude}"

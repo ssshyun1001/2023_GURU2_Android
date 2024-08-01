@@ -2,12 +2,12 @@ package com.example.guru2_dsjouju_app
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,11 +25,14 @@ class Siren_running : AppCompatActivity() {
 
     private lateinit var loginID: String
 
+    private lateinit var audioManager: AudioManager
+    private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_siren_running)
 
-        // 로그인 ID를 인텐트에서 추출
+        // 로그인 ID를 인텐트에서 추출하여 초기화
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
 
         sosButton = findViewById(R.id.sosButton)
@@ -42,16 +45,30 @@ class Siren_running : AppCompatActivity() {
             true
         }
 
+        // 오디오 매니저 초기화
+        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+
         showSirenDialog()
+
+        // 사이렌 시작 버튼 초기화
+        val toggleSirenButton: ImageButton = findViewById(R.id.toggleSirenButton)
+        toggleSirenButton.setOnClickListener {
+            if (mediaPlayer == null) {
+                // 사이렌 소리 시작
+                startSiren()
+            } else {
+                Toast.makeText(this, "사이렌 소리가 이미 시작되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     fun showSirenDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("3초 후 사이렌이 실행됩니다.")
+        builder.setMessage("사이렌을 시작하려면 확인 버튼을 누르세요.")
             .setCancelable(false)
             .setPositiveButton("확인") { _, _ ->
-                startSiren()
                 countdownTimer?.cancel()
+                startSiren()
             }
             .setNegativeButton("취소") { dialog, _ ->
                 dialog.dismiss()
@@ -62,14 +79,14 @@ class Siren_running : AppCompatActivity() {
         val alert = builder.create()
         alert.show()
 
-        countdownTimer = object : CountDownTimer(3500, 1000) {
+        countdownTimer = object : CountDownTimer(3300, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 alert.setMessage("3초 후 사이렌이 실행됩니다.\n자동 시작까지 ${millisUntilFinished / 1000}초 남았습니다.")
             }
 
             override fun onFinish() {
-                startSiren()
                 alert.dismiss()
+                startSiren()
             }
         }.start()
     }
@@ -80,17 +97,25 @@ class Siren_running : AppCompatActivity() {
             "siren_police" -> R.raw.police_siren
             "siren_fire" -> R.raw.fire_trucks_siren
             "siren_ambulance" -> R.raw.ambulance_siren
-            else -> null
+            else -> R.raw.police_siren  // 기본 사이렌으로 경찰 사이렌 사용
         }
 
-        soundResId?.let {
-            mediaPlayer = MediaPlayer.create(this, it).apply {
-                // 소리를 최대 볼륨으로 설정
+        val result = audioManager.requestAudioFocus(
+            audioFocusChangeListener,
+            AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN
+        )
+
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mediaPlayer = (MediaPlayer.create(this, soundResId)?.apply {
                 setVolume(1.0f, 1.0f)
-                // 사이렌 소리가 반복되도록 설정
                 isLooping = true
                 start()
-            }
+            } ?: run {
+                Toast.makeText(this, "사이렌 소리 초기화 실패", Toast.LENGTH_SHORT).show()
+            }) as MediaPlayer?
+        } else {
+            Toast.makeText(this, "오디오 포커스를 얻지 못했습니다.", Toast.LENGTH_SHORT).show()
         }
 
         val togglesirenButton: ImageButton = findViewById(R.id.toggleSirenButton)
@@ -98,30 +123,31 @@ class Siren_running : AppCompatActivity() {
             isButtonPressed = true
             handler.postDelayed({
                 if (isButtonPressed) {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
+                    stopSirenAndReturnToPrevious()
                 }
             }, 3000)
             true
         }
+
         togglesirenButton.setOnClickListener {
+            isButtonPressed = false
             Toast.makeText(this, "사이렌 중지를 위해 3초간 눌러주세요.", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun stopSirenAndReturnToPrevious() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
+        mediaPlayer?.apply {
+            if (isPlaying) {
+                stop()
+            }
+            release()
+        }
         mediaPlayer = null
-        countdownTimer?.cancel()
+
+        // 오디오 포커스 해제
+        audioManager.abandonAudioFocus(audioFocusChangeListener)
 
         finish()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer?.release()
-        mediaPlayer = null
     }
 }
 

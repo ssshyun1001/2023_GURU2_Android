@@ -22,6 +22,7 @@ class ReceiveCall : AppCompatActivity() {
             // activity_call_fix 화면으로 이동
             val intent = Intent(this, Call_activity::class.java)
             startActivity(intent)
+            finish()
         }
 
         hangupButton.setOnClickListener {
