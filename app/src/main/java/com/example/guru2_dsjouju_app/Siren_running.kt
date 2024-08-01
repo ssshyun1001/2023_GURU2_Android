@@ -125,13 +125,13 @@ class Siren_running : AppCompatActivity() {
                 if (isButtonPressed) {
                     stopSirenAndReturnToPrevious()
                 }
-            }, 3000)
+            }, 1000)
             true
         }
 
         togglesirenButton.setOnClickListener {
             isButtonPressed = false
-            Toast.makeText(this, "사이렌 중지를 위해 3초간 눌러주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "사이렌 중지를 위해 길게 눌러주세요.", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -5,7 +5,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
-import android.view.MotionEvent
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -25,9 +24,6 @@ class Call_activity : AppCompatActivity() {
     private lateinit var timerTextView: TextView
     private val handler = Handler()
     private var startTime: Long = 0
-
-    private var buttonPressStartTime: Long = 0
-    private val BUTTON_PRESS_DURATION = 3000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

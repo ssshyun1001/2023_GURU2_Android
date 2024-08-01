@@ -18,7 +18,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
 
     fun showSosDialog() {
         if (isSosRunning) {
-            Toast.makeText(context, "SOS 도움 요청 실행, Off를 원하시면 3초간 길게 눌러주세요", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "SOS 도움 요청 실행, Off를 원하시면 길게 눌러주세요", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -55,7 +55,6 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
         sosButton.setImageResource(R.drawable.app_icon_sos_o) // 아이콘 변경 (적절한 아이콘으로 대체)
         Toast.makeText(context, "SOS 도움 요청이 시작되었습니다", Toast.LENGTH_LONG).show()
 
-        sendMessage.sendLocationSMS()
         startPeriodicMessage()
     }
 
@@ -96,9 +95,9 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
 
     private fun startStopCountdown() {
         stopCountdownTimer?.cancel()
-        stopCountdownTimer = object : CountDownTimer(3000, 1000) {
+        stopCountdownTimer = object : CountDownTimer(999, 333) {
             override fun onTick(millisUntilFinished: Long) {
-                val secondsElapsed = (3000 - millisUntilFinished) / 1000
+                val secondsElapsed = (999 - millisUntilFinished) / 333
                 when (secondsElapsed) {
                     1L -> sosButton.setImageResource(R.drawable.app_icon_sos_1)
                     2L -> sosButton.setImageResource(R.drawable.app_icon_sos_2)
