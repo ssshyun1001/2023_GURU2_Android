@@ -107,9 +107,9 @@ class Settings : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // 텍스트를 바이트 배열로 변환하여 바이트 길이 확인
                 val byteLength = s?.toString()?.toByteArray(Charsets.UTF_8)?.size ?: 0
-                if (byteLength > 140) {
-                    // 바이트 길이가 140자를 초과하면 경고 메시지를 표시
-                    editTextSosMessage.error = "메시지 길이는 140 바이트를 초과할 수 없습니다."
+                if (byteLength > 125) {
+                    // 바이트 길이가 140자를 초과하면 현재 바이트 수와 최대 바이트 수를 포함한 경고 메시지 표시
+                    editTextSosMessage.error = "메시지 길이 제한 : ${byteLength}/140 byte"
                 } else {
                     // 길이가 정상 범위일 때 에러 제거
                     editTextSosMessage.error = null
@@ -118,7 +118,7 @@ class Settings : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 // 바이트 길이가 140자를 초과할 경우 초과된 부분을 삭제
-                if (s != null && s.toString().toByteArray(Charsets.UTF_8).size > 140) {
+                if (s != null && s.toString().toByteArray(Charsets.UTF_8).size >= 140) {
                     val maxLength = 140
                     var length = 0
                     for (i in 0 until s.length) {
