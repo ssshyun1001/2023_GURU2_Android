@@ -101,6 +101,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
     }
 
     private fun startStopCountdown() {
+        stopCountdownTimer?.cancel() // 기존 타이머 취소
         stopCountdownTimer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsElapsed = (3000 - millisUntilFinished) / 1000

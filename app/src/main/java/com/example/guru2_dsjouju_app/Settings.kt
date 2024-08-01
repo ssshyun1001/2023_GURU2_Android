@@ -82,24 +82,6 @@ class Settings : AppCompatActivity() {
 
         logoutButton = findViewById(R.id.logout_button)
 
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedFrequency = parent.getItemAtPosition(position).toString()
-                val frequencyMillis = when (selectedFrequency) {
-                    "1분" -> 1 * 60 * 1000L
-                    "2분" -> 2 * 60 * 1000L
-                    "3분" -> 3 * 60 * 1000L
-                    "4분" -> 4 * 60 * 1000L
-                    "5분" -> 5 * 60 * 1000L
-                    else -> 1 * 60 * 1000L
-                }
-                saveSpinnerSelection(selectedFrequency)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // 아무 것도 선택되지 않음
-            }
-        }
 
         editTextSosMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -303,7 +285,6 @@ class Settings : AppCompatActivity() {
     }
 
     private fun saveSosMessage() {
-        val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
         val newMessage = editTextSosMessage.text.toString()
         if (newMessage.isNotBlank()) {
             sosMessageTextView.text = newMessage
@@ -311,10 +292,6 @@ class Settings : AppCompatActivity() {
                 .putString("sos_message", newMessage)
                 .apply()
             toggleEditMode()
-
-            // SendMessage 인스턴스를 생성하면서 savedMessage 전달하기
-            val sendMessage = SendMessage(this, loginID)
-            sendMessage.sendLocationSMS()
         } else {
             Toast.makeText(this, "메시지를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
