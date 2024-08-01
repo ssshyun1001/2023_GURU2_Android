@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -100,6 +101,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Initialize location permission launcher
+        // 위치 권한 요청을 위한 ActivityResultLauncher 초기화
         locationPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -117,14 +119,27 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     ) // Use default location (Seoul) for heatmap
                 }
             }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+            mapFragment?.getMapAsync(this)
+                ?: throw IllegalStateException("Map Fragment not found")
+        } else {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
 
-        val mapFragment =
+
+        /*val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
             ?: throw IllegalStateException("Map Fragment not found")
 
         // Request location permission
-        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)*/
     }
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -132,10 +147,35 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mMap = googleMap
         mMap.setOnMarkerClickListener(this)
         initializeMap() // Initialize the map to Seoul by default
+        getCurrentLocation()
     }
 
     private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
+                    addPoliceStationMarkers()
+                    createHeatmap(currentLatLng)
+                } else {
+                    Toast.makeText(this, "Unable to get current location, using default location", Toast.LENGTH_LONG).show()
+                    initializeMap()
+                    addPoliceStationMarkers()
+                    createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
+                }
+            }.addOnFailureListener {
+                Toast.makeText(this, "Failed to get location: ${it.message}", Toast.LENGTH_LONG).show()
+                initializeMap()
+                addPoliceStationMarkers()
+                createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
+            }
+        } else {
+            // 권한이 없을 때의 처리
+            Toast.makeText(this, "Location permission is required", Toast.LENGTH_LONG).show()
+        }
+
+        /*if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
@@ -158,7 +198,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     ) // Use default location (Seoul) for heatmap
                 }
             }
-        }
+        }*/
     }
 
     private fun initializeMap() {
