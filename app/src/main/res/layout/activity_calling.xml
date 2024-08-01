@@ -34,9 +34,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:text="00:00"
                 android:textSize="20sp"
-                android:drawablePadding="10dp"/>
+                android:text="00:00:00" />
         </LinearLayout>
 
         <TextView
@@ -56,7 +55,6 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/text_contact_name"
-            android:layout_marginTop="8dp"
             android:text="휴대전화   010-1234-5678"
             android:textSize="16sp" />
 
@@ -64,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="360dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="50dp"
             android:src="@drawable/semi_background" />
 
         <ImageButton
@@ -72,7 +70,7 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="135dp"
+            android:layout_marginBottom="80dp"
             android:layout_centerHorizontal="true"
             android:background="@null"
             android:scaleType="fitCenter"
@@ -83,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="215dp"
+            android:layout_marginBottom="160dp"
             android:padding="50dp"
             android:columnCount="3"
             android:rowCount="3">
