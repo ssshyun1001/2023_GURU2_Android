@@ -37,12 +37,10 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 import com.google.gson.annotations.SerializedName
-import org.json.JSONArray
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.InputStream
 
 interface ConvenienceStoreService {
     @GET("getConvenienceStoreData.do")
@@ -131,15 +129,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         } else {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-
-
-        /*val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
-            ?: throw IllegalStateException("Map Fragment not found")
-
-        // Request location permission
-        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)*/
     }
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -153,6 +142,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private fun getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                val currentLatLng = location?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(37.5665, 126.9780)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
+                addPoliceStationMarkers()
+                createHeatmap(currentLatLng)
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
@@ -174,31 +167,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             // 권한이 없을 때의 처리
             Toast.makeText(this, "Location permission is required", Toast.LENGTH_LONG).show()
         }
-
-        /*if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
-                    addPoliceStationMarkers()
-                    createHeatmap(currentLatLng)
-                } else {
-                    Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
-                    initializeMap()
-                    addPoliceStationMarkers()
-                    createHeatmap(
-                        LatLng(
-                            37.5665,
-                            126.9780
-                        )
-                    ) // Use default location (Seoul) for heatmap
-                }
-            }
-        }*/
     }
 
     private fun initializeMap() {
@@ -306,39 +274,25 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
         }
     }
 
-    private fun loadCctvData(): MutableList<Cctv> {
-        val cctvs = mutableListOf<Cctv>()
+    fun loadCctvData(): List<LatLng> {
+        val cctvs = mutableListOf<LatLng>()
         try {
-            val inputStream: InputStream = assets.open("cctv_data.json")
-            val size: Int = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            val json = String(buffer, Charsets.UTF_8)
+            val json = assets.open("cctv_data.json").bufferedReader().use { it.readText() }
+            val jsonObject = JSONObject(json)
+            val dataArray = jsonObject.getJSONArray("DATA")
 
-            val jsonArray = JSONArray(json)
-
-            for (i in 0 until jsonArray.length()) {
-                val jsonObject = jsonArray.getJSONObject(i)
-                val name = jsonObject.getString("name")
-                val address = jsonObject.getString("address")
-                val latitude = jsonObject.getDouble("latitude")
-                val longitude = jsonObject.getDouble("longitude")
-
-                val cctv = Cctv(name, address, latitude, longitude)
-                cctvs.add(cctv)
-                Log.d("MapActivity", "Loaded CCTV: $name at $latitude, $longitude")
+            for (i in 0 until dataArray.length()) {
+                val obj = dataArray.getJSONObject(i)
+                val lat = obj.getDouble("WGSXPT")
+                val lng = obj.getDouble("WGSYPT")
+                cctvs.add(LatLng(lat, lng))
             }
-            if (cctvs.isEmpty()) {
-                Log.e("MapActivity", "No CCTV data found.")
-            }
-
-            addCctvMarkers(cctvs)
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: JSONException) {
             e.printStackTrace()
         }
+        Log.d("MapActivity", "Loaded ${cctvs.size} data points")
         return cctvs
     }
 
@@ -377,36 +331,40 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
             .build()
     }
 
-    private val service by lazy {
-        retrofit.create(ConvenienceStoreService::class.java)
-    }
-    private val serviceKey = "9BPONXOB-9BPO-9BPO-9BPO-9BPONXOB24"
+    //private val service by lazy {
+    //    retrofit.create(ConvenienceStoreService::class.java)}
+    //private val serviceKey = "9BPONXOB-9BPO-9BPO-9BPO-9BPONXOB24"
 
     private fun loadConvenienceStores() {
-        service.getConvenienceStores(serviceKey, 1, 100, "json")
-            .enqueue(object : Callback<ConvenienceStoreResponse> {
-                override fun onResponse(
-                    call: Call<ConvenienceStoreResponse>,
-                    response: Response<ConvenienceStoreResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.response?.body?.items?.item?.let { stores ->
-                            addConvenienceStoreMarkers(stores)
-                        }
-                    } else {
-                        Log.e("MapActivity", "API call failed: ${response.errorBody()}")
-                    }
-                }
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.data.go.kr/openapi/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-                override fun onFailure(call: Call<ConvenienceStoreResponse>, t: Throwable) {
-                    Log.e("MapActivity", "API call failed: ${t.message}")
-                    Toast.makeText(
-                        this@MapActivity,
-                        "Failed to load convenience stores",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        val service = retrofit.create(ConvenienceStoreService::class.java)
+
+        val call = service.getConvenienceStores(
+            serviceKey = "BPONXOB-9BPO-9BPO-9BPO-9BPONXOB24",
+            pageNo = 1,
+            numOfRows = 1000,
+            type = "xml"
+        )
+
+        call.enqueue(object : Callback<ConvenienceStoreResponse> {
+            override fun onResponse(call: Call<ConvenienceStoreResponse>, response: Response<ConvenienceStoreResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.response?.body?.items?.item?.let { convenienceStores ->
+                        addConvenienceStoreMarkers(convenienceStores)
+                    }
+                } else {
+                    Log.e("ConvenienceStore", "Failed to load data")
                 }
-            })
+            }
+
+            override fun onFailure(call: Call<ConvenienceStoreResponse>, t: Throwable) {
+                Log.e("ConvenienceStore", "Failed to load data: ${t.message}")
+            }
+        })
     }
 
     private fun addConvenienceStoreMarkers(stores: List<ConvenienceStore>) {
@@ -416,7 +374,9 @@ mMap.animateCamera(CameraUpdateFactory.zoomOut())
                 .position(position)
                 .title(store.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // Color for convenience stores
-            mMap.addMarker(markerOptions)
+            //mMap.addMarker(markerOptions)
+            val marker = mMap.addMarker(markerOptions)
+            marker?.tag = store
         }
     }
 }
@@ -441,34 +401,3 @@ class HandlePackageAddedService : IntentService("HandlePackageAddedService") {
         // 패키지 추가 처리 로직
     }
 }
-
-
-        /*
-    fun loadDataFromJson(): List<LatLng> {
-        val data = mutableListOf<LatLng>()
-        try {
-            val json = assets.open("cctv_data.json").bufferedReader().use { it.readText() }
-            val jsonObject = JSONObject(json)
-            val dataArray = jsonObject.getJSONArray("DATA")
-
-            for (i in 0 until dataArray.length()) {
-                val obj = dataArray.getJSONObject(i)
-                val lat = obj.getDouble("WGSXPT")
-                val lng = obj.getDouble("WGSYPT")
-                data.add(LatLng(lat, lng))
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        Log.d("MapActivity", "Loaded ${data.size} data points")
-        return data
-    }
-
-    data class PoliceStation(
-        val name: String,
-        val address: String,
-        val latitude: Double,
-        val longitude: Double
-    )*/
