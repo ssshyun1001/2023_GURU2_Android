@@ -67,12 +67,6 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
         periodicMessageTimer?.cancel()
     }
 
-    fun updateSosFrequency() {
-        if (isSosRunning) {
-            startPeriodicMessage()
-        }
-    }
-
     fun setSosUpdateFrequency(frequencyMillis: Long) {
         if (isSosRunning) {
             periodicMessageTimer?.cancel()
@@ -101,7 +95,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
     }
 
     private fun startStopCountdown() {
-        stopCountdownTimer?.cancel() // 기존 타이머 취소
+        stopCountdownTimer?.cancel()
         stopCountdownTimer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsElapsed = (3000 - millisUntilFinished) / 1000
@@ -110,7 +104,6 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
                     2L -> sosButton.setImageResource(R.drawable.app_icon_sos_2)
                 }
             }
-
             override fun onFinish() {
                 stopSos()
             }
