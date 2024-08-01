@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.SEND_SMS" /> <!-- 문자 -->
     <uses-permission android:name="android.permission.CAMERA" /> <!-- 카메라 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 영상 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 외부저장소 접근 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 정확한 위치 정보 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />

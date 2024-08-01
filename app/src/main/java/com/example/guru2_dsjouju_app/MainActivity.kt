@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.SEND_SMS,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
@@ -98,6 +97,8 @@ class MainActivity : AppCompatActivity() {
             // 모든 권한이 승인된 경우에만 MapActivity로 이동
             if (allPermissionsGranted) {
                 startMapActivity()
+            } else {
+                Toast.makeText(this, "모든 권한을 허용해야 합니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
