@@ -2,19 +2,25 @@
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Android Studio](https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
-![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)
+
+<br>
 
 본 안드로이드 어플리케이션 프로젝트는 SWU GURU2 안드로이드 분반의 5조, 데사쥬쥬팀의 해커톤 프로젝트입니다.
 
 <br>
 
-** 귀갓길에 안심을 더하다, 지켜주길 **
+![Video Label](http://img.youtube.com/vi/AwrFPJk_BGU/0.jpg)
+
+- [어플리케이션 유튜브 링크](https://youtu.be/AwrFPJk_BGU)
 
 <br>
 
-(향후 설명 추가)
+**<< 귀갓길에 안심을 더하다, 지켜주길 >>**
 
-<br>
+: 밤길을 홀로 걸으며 *무섭다고* 느끼신 경험, 다들 한 번쯤을 있으셨을 텐데요. 
+
+: 저희는 이러한 경험으로부터 밤길을 안전하게 귀가할 수 있도록 돕는 앱을 개발했습니다.
+
 <br>
 
 ## How to build
@@ -32,9 +38,115 @@
 <br>
 
 ## Changelog
+- <code>2024/08/01</code>
+
+  cctv, 편의점 위치 지도 API 추가
+
+  지도 실행시 현재 위치에서 시작하도록 기능 구현
+
+  Call 화면에서 현재 통화 시간 타이머 기능
+
+  지도 API 서비스 키 변경
+
+  커스텀 SOS 메세지 기능 오류 해결
+
+  Call 화면 기능 통합, 사이렌 미출력 오류 해결
+
+  Settings 화면 저장 버튼 오류 수정, 사이렌 버튼 출력 오류 수정, Call 종료 버튼 오류 수정
+
+  불필요해진 일부 파일 제거 및 정리
+
+<br>
+
+- <code>2024/07/31</code>
+
+  전체 UI 개선 및 테마 통일
+
+  SOS 메세지 설정 주기마다 전송, 커스텀 SOS 메세지 일부 구현 시도, SOS 버튼 기능 연결 완료
+
+  Settings id 연결 오류 수정
+
+  메세지 설정 및 로그인 상태 유지 저장
+
+  커스텀 SOS 메세지 구현 (+ 상단 commit과 병합)
+
+  자동 로그인 기능, 로그아웃 버튼 기능 구현
+
+  회원가입 시 아이디 중복확인 필수 기능 추가
+
+<br>
+
+- <code>2024/07/30</code>
+
+  회원가입 창 뒤로가기 버튼
+
+  Settings에 로그아웃 버튼 추가
+
+  cctv 지도 API 추가 완료
+
+  사이렌 기능 복구, 메인·설정·사이렌러닝 화면 UI 및 디자인(테마·컬러) 변경, 전반적인 SOS 기능 구현 완료
+
+  일부 UI 개선 및 테마 통일
+
+  Settings에 id 연결, 현재 로그인한 id만 조회되도록 수정
+
+  로그인 조건 미충족시 경고 표시 기능 구현
+
+<br>
+
+- <code>2024/07/29</code>
+
+  옵션 메뉴 오류 fix, 메뉴 아이템 id 일부 변경, 튜토리얼 화면 구현
+
+  로그인 >> 메인 화면 전환 오류 수정
+
+  회원가입 DB 구성, 회원가입 xml 레이아웃 및 기능 구현
+
+  SOS 팝업 화면, SOS 실행 변수, 실행에 따른 icon 변화 구현
+
+  Contact DB 구현 완료
+
+  사용자 정보 DB 생성 완료
+
+<br>
+
+- <code>2024/07/28</code>
+
+  사이렌 소리 추가 완료
+
+  아빠 전화 녹음 추가 및 Call 화면 구현
+
+  Call 화면 레이아웃 세분화, 제작 png 및 svg 소스로 일부 이미지 변경
+
+  MapActivity 기능 복구 및 통합, Settings 기능 수정
+
+  Login의 로그인 버튼, ReciveCall 화면 버튼으로 화면 전환 기능 구현
+
+<br>
+
+- <code>2024/07/27</code>
+
+  불필요해진 일부 파일 제거 및 정리
+
+  Login 화면 및 통화 수신 화면 추가
+
+  Siren 페이지 일부 구현 (Settings의 라디오 버튼과 미연결)
+
+<br>
+
+- <code>2024/07/26</code>
+
+  -
+
+<br>
+
 - <code>2024/07/25</code>
 
-  설정 기초 기능 구현 완료
+  Settings 기초 기능 구현 완료
+
+  오류 수정 및 Siren/SOS 팝업 설정
+
+  Settings 옵션 메뉴 아이템 삭제
 
 <br>
 
@@ -58,11 +170,11 @@
 
 - <code>2024/07/23</code>
 
-  call, soshistory, settings 화면 초기 구현
+  Call, Soshistory, Settings 화면 초기 구현
   
-  settings 화면 업데이트 및 sendMessage 클래스 초기 구현
+  Settings 화면 업데이트 및 SendMessage 클래스 초기 구현
 
-  main 초기 구현, soshistory 화면 구현, menu 설정 구현
+  MainActivity 초기 구현, Soshistory 화면 구현, menu 설정 구현
 
   오타/오류 수정, 긴급 연락처 추가/삭제, 사이렌 선택, 위치기록주기 설정
 
