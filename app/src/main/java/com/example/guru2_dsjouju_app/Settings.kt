@@ -289,6 +289,7 @@ class Settings : AppCompatActivity() {
             sosSaveButton.visibility = View.GONE
             sosEditButton.text = "수정"
             editTextSosMessage.setText(originalSosMessage)
+            editTextSosMessage.setText(sosMessageTextView.text.toString())
         } else {
             originalSosMessage = sosMessageTextView.text.toString()
             sosMessageTextView.visibility = View.GONE
@@ -303,6 +304,7 @@ class Settings : AppCompatActivity() {
         val newMessage = editTextSosMessage.text.toString()
         if (newMessage.isNotBlank()) {
             sosMessageTextView.text = newMessage
+            originalSosMessage = newMessage
             sharedPreferences.edit()
                 .putString("sos_message", newMessage)
                 .apply()
