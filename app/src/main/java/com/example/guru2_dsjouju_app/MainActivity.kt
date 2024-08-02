@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.gson.annotations.SerializedName
 import com.google.maps.android.heatmaps.HeatmapTileProvider
@@ -68,6 +69,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private val policeMarkers = mutableListOf<Marker>()
     private val convenienceStoreMarkers = mutableListOf<Marker>()
     private val cctvMarkers = mutableListOf<Marker>()
+
+    private var heatmapTileOverlay: TileOverlay? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -396,43 +399,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 
-    /*private fun getCurrentLocation() {
+    private fun getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
                     val currentLatLng = LatLng(it.latitude, it.longitude)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
-                }
-            }
-        }
-    }*/
-    private fun getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                val currentLatLng = location?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(37.5665, 126.9780)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
-                addPoliceStationMarkers()
-                createHeatmap(currentLatLng)
-                if (location != null) {
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
-                    addPoliceStationMarkers()
                     createHeatmap(currentLatLng)
-                } else {
-                    Toast.makeText(this, "Unable to get current location, using default location", Toast.LENGTH_LONG).show()
-                    initializeMap()
-                    addPoliceStationMarkers()
-                    createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
                 }
-            }.addOnFailureListener {
-                Toast.makeText(this, "Failed to get location: ${it.message}", Toast.LENGTH_LONG).show()
-                initializeMap()
-                addPoliceStationMarkers()
-                createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
             }
-        } else {
-            // 권한이 없을 때의 처리
-            Toast.makeText(this, "Location permission is required", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -444,17 +419,42 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             return
         }
 
-        // 모든 데이터를 사용하여 weightedLatLngs 생성
-        val weightedLatLngs = data.map { WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0) }
+        // 5km를 미터로 변환
+        val radiusInMeters = 5000
+
+        // 현재 위치를 기준으로 5km 이내의 CCTV 데이터 필터링
+        val filteredData = data.filter { location ->
+            val distance = FloatArray(1)
+            Location.distanceBetween(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                location.latitude,
+                location.longitude,
+                distance
+            )
+            distance[0] < radiusInMeters
+        }
+
+        if (filteredData.isEmpty()) {
+            Log.e("MapActivity", "No data found within the 5km radius.")
+            return
+        }
+
+        // 필터링된 CCTV 데이터로 WeightedLatLng 리스트 생성
+        val weightedLatLngs = filteredData.map {
+            WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0)
+        }
+
+        // HeatmapTileProvider 생성
         val provider = HeatmapTileProvider.Builder()
             .weightedData(weightedLatLngs)
             .build()
 
-        // 기존 TileOverlay 제거
-        mMap.clear() // 기존의 모든 오버레이를 제거
+        // 기존의 HeatmapTileOverlay가 있으면 제거
+        heatmapTileOverlay?.remove()
 
-        // 새 HeatmapTileProvider를 TileOverlay로 추가
-        mMap.addTileOverlay(TileOverlayOptions().tileProvider(provider))
+        // 새로운 HeatmapTileOverlay 추가
+        heatmapTileOverlay = mMap.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
 
 
