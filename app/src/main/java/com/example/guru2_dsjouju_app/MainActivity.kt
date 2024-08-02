@@ -18,6 +18,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -72,6 +73,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // FusedLocationProviderClient 초기화
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // 로그인 ID를 인텐트에서 추출
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
@@ -237,6 +241,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap = googleMap
         mMap.setOnMarkerClickListener(this)
         initializeMap()
+        getCurrentLocation()
     }
 
     private fun initializeMap() {
@@ -391,7 +396,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 
-    private fun getCurrentLocation() {
+    /*private fun getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
@@ -400,33 +405,55 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 }
             }
         }
+    }*/
+    private fun getCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                val currentLatLng = location?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(37.5665, 126.9780)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
+                addPoliceStationMarkers()
+                createHeatmap(currentLatLng)
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
+                    addPoliceStationMarkers()
+                    createHeatmap(currentLatLng)
+                } else {
+                    Toast.makeText(this, "Unable to get current location, using default location", Toast.LENGTH_LONG).show()
+                    initializeMap()
+                    addPoliceStationMarkers()
+                    createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
+                }
+            }.addOnFailureListener {
+                Toast.makeText(this, "Failed to get location: ${it.message}", Toast.LENGTH_LONG).show()
+                initializeMap()
+                addPoliceStationMarkers()
+                createHeatmap(LatLng(37.5665, 126.9780)) // Use default location (Seoul) for heatmap
+            }
+        } else {
+            // 권한이 없을 때의 처리
+            Toast.makeText(this, "Location permission is required", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun createHeatmap(currentLocation: LatLng) {
-        val data = loadCctvData()
-        val filteredData = data.filter { location ->
-            val distance = FloatArray(1)
-            Location.distanceBetween(
-                currentLocation.latitude,
-                currentLocation.longitude,
-                location.latitude,
-                location.longitude,
-                distance
-            )
-            distance[0] < 5000 // 5km radius
-        }
+        val data = loadCctvData() // CCTV 데이터 로드
 
-        if (filteredData.isEmpty()) {
+        if (data.isEmpty()) {
             Log.e("MapActivity", "No data found for heatmap.")
             return
         }
 
-        val weightedLatLngs =
-            filteredData.map { WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0) }
+        // 모든 데이터를 사용하여 weightedLatLngs 생성
+        val weightedLatLngs = data.map { WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0) }
         val provider = HeatmapTileProvider.Builder()
             .weightedData(weightedLatLngs)
             .build()
 
+        // 기존 TileOverlay 제거
+        mMap.clear() // 기존의 모든 오버레이를 제거
+
+        // 새 HeatmapTileProvider를 TileOverlay로 추가
         mMap.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
 
