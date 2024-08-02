@@ -42,11 +42,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     // 권한 요청 코드 상수
     private val PERMISSION_REQUEST_CODE = 100
+
     private lateinit var homeoptionmenubtn: ImageButton
+
     private lateinit var sirenButton: ImageButton
     private lateinit var sosManager: SosManager
     private lateinit var sosButton: ImageButton
     private lateinit var callButton: ImageButton
+
     private lateinit var loginID: String
 
     private lateinit var mMap: GoogleMap
@@ -55,18 +58,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         // 로그인 ID를 인텐트에서 추출
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
+
         homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
+
         sirenButton = findViewById(R.id.button_siren)
         sosButton = findViewById(R.id.button_sos)
         sosButton.setImageResource(R.drawable.app_icon_sos_x)
         callButton = findViewById(R.id.button_call)
+
         homeoptionmenubtn.setOnClickListener { showPopupMenu(it) }
         sirenButton.setOnClickListener { startSirenActivity() }
         sosManager = SosManager(this, sosButton, loginID)
@@ -76,6 +81,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             true
         }
         callButton.setOnClickListener { startCallActivity() }
+
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()
     }
@@ -86,7 +92,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             Manifest.permission.SEND_SMS,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
@@ -98,8 +103,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         if (permissionsToRequest.isNotEmpty()) {
             ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), PERMISSION_REQUEST_CODE)
         } else {
-            // 권한이 이미 승인된 경우 MapActivity로 이동
-            initializeMap()
+            // 권한이 이미 승인된 경우 initializeMap 실행
+            val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+            mapFragment?.getMapAsync(this)
         }
     }
     // 권한 요청 결과 처리
@@ -115,10 +121,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 }
             }
 
-            // Initialize the map
-            val mapFragment =
-                supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-            mapFragment?.getMapAsync(this)
+            if (allPermissionsGranted) {
+                // Initialize the map
+                val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+                mapFragment?.getMapAsync(this)
+            }
         }
     }
 
@@ -230,12 +237,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun startSirenActivity() {
         // Start Siren activity
         val intent = Intent(this, Siren_running::class.java)
-        startActivity(intent)
-    }
-
-    private fun startSosActivity() {
-        // Start SOS activity
-    val intent = Intent(this, SosManager::class.java)
         startActivity(intent)
     }
 

@@ -54,6 +54,23 @@ class ContactsDAO(private val context: Context, private val loginID: String) {
         db.close()
     }
 
+    fun getContactByPhone(phone: String): Boolean {
+        val db = dbManager.readableDatabase
+        val cursor = db.query(
+            "contacts",  // 테이블 이름
+            arrayOf("phone"),  // 조회할 열 이름
+            "id = ? AND phone = ?",  // 조건절
+            arrayOf(loginID, phone),  // 조건절에 매핑될 값
+            null,  // 그룹화할 행
+            null,  // 행 그룹의 조건
+            null  // 정렬 기준
+        )
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        db.close()
+        return exists
+    }
+
     // 연락처 삭제 메서드
     fun deleteContact(phone: String): Int {
         val db = dbManager.writableDatabase

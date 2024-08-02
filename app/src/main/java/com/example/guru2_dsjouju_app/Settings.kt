@@ -63,8 +63,6 @@ class Settings : AppCompatActivity() {
             loginID = sharedPreferences.getString("loginID_save", "") ?: ""
         }
 
-
-
         initializeUI()
         initializeDatabase()
         initializePreferences()
@@ -190,9 +188,14 @@ class Settings : AppCompatActivity() {
     private fun addContact() {
         val phone = editTextContact.text.toString().trim()
         if (phone.isNotEmpty()) {
-            contactsDAO.insertContact(phone)
-            editTextContact.text.clear()
-            updateContactList()
+            val exists = contactsDAO.getContactByPhone(phone)
+            if (exists) {
+                Toast.makeText(this, "이미 존재하는 번호입니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                contactsDAO.insertContact(phone)
+                editTextContact.text.clear()
+                updateContactList()
+            }
         } else {
             Toast.makeText(this, "연락처를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
