@@ -40,53 +40,86 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    // 권한 요청 코드 상수
+    private val PERMISSION_REQUEST_CODE = 100
+    private lateinit var homeoptionmenubtn: ImageButton
+    private lateinit var sirenButton: ImageButton
+    private lateinit var sosManager: SosManager
+    private lateinit var sosButton: ImageButton
+    private lateinit var callButton: ImageButton
+    private lateinit var loginID: String
+
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
 
-    private lateinit var homeOptionMenuBtn: ImageButton
-    private lateinit var sirenButton: ImageButton
-    private lateinit var sosButton: ImageButton
-    private lateinit var callButton: ImageButton
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        homeOptionMenuBtn = findViewById(R.id.home_option_menu_btn)
+        // 로그인 ID를 인텐트에서 추출
+        loginID = intent.getStringExtra("LOGIN_ID") ?: ""
+        homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
         sirenButton = findViewById(R.id.button_siren)
         sosButton = findViewById(R.id.button_sos)
+        sosButton.setImageResource(R.drawable.app_icon_sos_x)
         callButton = findViewById(R.id.button_call)
-
-        // Set button click listeners
-//        homeOptionMenuBtn.setOnClickListener { showPopupMenu(it) }
+        homeoptionmenubtn.setOnClickListener { showPopupMenu(it) }
         sirenButton.setOnClickListener { startSirenActivity() }
-        sosButton.setOnClickListener { startSosActivity() }
+        sosManager = SosManager(this, sosButton, loginID)
+        sosButton.setOnClickListener { sosManager.showSosDialog() }
+        sosButton.setOnLongClickListener {
+            sosManager.handleLongPress()
+            true
+        }
         callButton.setOnClickListener { startCallActivity() }
-
-        // Initialize location services
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        // Initialize location permission launcher
-        locationPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                getCurrentLocation()
-            } else {
-                Toast.makeText(this, "Location permission is required", Toast.LENGTH_LONG).show()
-            }
+        // 권한이 필요한 경우 요청
+        checkAndRequestPermissions()
+    }
+    private fun checkAndRequestPermissions() {
+        // 요청할 권한 목록
+        val requiredPermissions = arrayOf(
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        // 요청할 권한 중 아직 승인되지 않은 권한 필터링
+        val permissionsToRequest = requiredPermissions.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
-
-        // Check for location permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getCurrentLocation()
+        // 승인되지 않은 권한이 있으면 권한 요청 실행
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), PERMISSION_REQUEST_CODE)
         } else {
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            // 권한이 이미 승인된 경우 MapActivity로 이동
+            initializeMap()
         }
+    }
+    // 권한 요청 결과 처리
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            var allPermissionsGranted = true
+            permissions.forEachIndexed { index, permission ->
+                if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    allPermissionsGranted = false
+                    Toast.makeText(this, "$permission 접근 거부됨", Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        // Initialize the map
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
+            // Initialize the map
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+            mapFragment?.getMapAsync(this)
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -168,28 +201,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.addTileOverlay(TileOverlayOptions().tileProvider(heatmapProvider))
     }
 
-//    private fun showPopupMenu(view: View) {
-//        val popupMenu = PopupMenu(this, view)
-//        popupMenu.menuInflater.inflate(R.menu.home_option_menu, popupMenu.menu)
-//        popupMenu.setOnMenuItemClickListener { item ->
-//            when (item.itemId) {
-//                R.id.menu_option1 -> handleOption1()
-//                R.id.menu_option2 -> handleOption2()
-//                else -> false
-//            }
-//        }
-//        popupMenu.show()
-//    }
-//
-//    private fun handleOption1(): Boolean {
-//        // Handle option 1 action
-//        return true
-//    }
-//
-//    private fun handleOption2(): Boolean {
-//        // Handle option 2 action
-//        return true
-//    }
+    // 상단 옵션 메뉴
+    private fun showPopupMenu(view: android.view.View) {
+        val popup = PopupMenu(this, view)
+        popup.menuInflater.inflate(R.menu.menu_main, popup.menu)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_tutorial -> {
+                    // 사용법 항목 클릭 시 Tutorial로 이동
+                    val intent = Intent(this, Tutorial::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.action_settings -> {
+                    // Settings 액티비티로 이동하면서 LOGIN_ID를 전달합니다.
+                    val intent = Intent(this, Settings::class.java)
+                    intent.putExtra("LOGIN_ID", loginID)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
 
     private fun startSirenActivity() {
         // Start Siren activity
