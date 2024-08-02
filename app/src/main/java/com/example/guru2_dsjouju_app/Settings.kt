@@ -50,8 +50,20 @@ class Settings : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // loginID를 인텐트에서 추출
+        sharedPreferences = getSharedPreferences("SettingsPrefs", Context.MODE_PRIVATE)
+
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
+
+        // Check if loginID is empty or null
+        if (loginID.isNotEmpty()) {
+            sharedPreferences.edit()
+                .putString("loginID_save", loginID)
+                .apply()
+        } else {
+            loginID = sharedPreferences.getString("loginID_save", "") ?: ""
+        }
+
+
 
         initializeUI()
         initializeDatabase()
