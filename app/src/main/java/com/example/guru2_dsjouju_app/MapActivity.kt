@@ -1,3 +1,4 @@
+/*
 package com.example.guru2_dsjouju_app
 
 import android.Manifest
@@ -401,3 +402,4 @@ class HandlePackageAddedService : IntentService("HandlePackageAddedService") {
         // 패키지 추가 처리 로직
     }
 }
+*/
