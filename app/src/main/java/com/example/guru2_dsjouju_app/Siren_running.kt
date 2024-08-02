@@ -2,6 +2,7 @@ package com.example.guru2_dsjouju_app
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -28,12 +29,17 @@ class Siren_running : AppCompatActivity() {
     private lateinit var audioManager: AudioManager
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { }
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_siren_running)
 
         // 로그인 ID를 인텐트에서 추출하여 초기화
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
+
+        // SharedPreferences 초기화
+        sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE)
 
         sosButton = findViewById(R.id.sosButton)
 
@@ -92,11 +98,11 @@ class Siren_running : AppCompatActivity() {
     }
 
     private fun startSiren() {
-        val sirenType = intent.getStringExtra("siren_type")
-        val soundResId = when (sirenType) {
-            "siren_police" -> R.raw.police_siren
-            "siren_fire" -> R.raw.fire_trucks_siren
-            "siren_ambulance" -> R.raw.ambulance_siren
+        val selectedSirenId = sharedPreferences.getInt("selected_siren", R.id.radio_siren1)
+        val soundResId = when (selectedSirenId) {
+            R.id.radio_siren1 -> R.raw.police_siren
+            R.id.radio_siren2 -> R.raw.fire_trucks_siren
+            R.id.radio_siren3 -> R.raw.ambulance_siren
             else -> R.raw.police_siren  // 기본 사이렌으로 경찰 사이렌 사용
         }
 
