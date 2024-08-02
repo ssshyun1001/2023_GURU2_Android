@@ -1,42 +1,50 @@
 package com.example.guru2_dsjouju_app
 
 import android.Manifest
+import android.app.IntentService
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.Space
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlayOptions
+import com.google.gson.annotations.SerializedName
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import com.google.maps.android.heatmaps.WeightedLatLng
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONException
+import org.json.JSONObject
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Root
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.io.IOException
-import java.util.Locale
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -54,8 +62,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
+    //private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
 
+    private val policeMarkers = mutableListOf<Marker>()
+    private val convenienceStoreMarkers = mutableListOf<Marker>()
+    private val cctvMarkers = mutableListOf<Marker>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +95,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()
+
+        val showPoliceStations: Button = findViewById(R.id.policeStation)
+        val showConvenienceStores: Button = findViewById(R.id.convenientStore)
+        val showCctvs: Button = findViewById(R.id.cctv)
+
+        showPoliceStations.setOnClickListener { showMarkers(policeMarkers) }
+        showCctvs.setOnClickListener { showMarkers(cctvMarkers) }
+        showConvenienceStores.setOnClickListener { showMarkers(convenienceStoreMarkers) }
     }
     private fun checkAndRequestPermissions() {
         // 요청할 권한 목록
@@ -129,6 +148,91 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    fun createRetrofit(): Retrofit {
+        // 로깅 인터셉터 설정
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging) // 로깅 인터셉터 추가
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl("https://safemap.go.kr/")
+            .addConverterFactory(SimpleXmlConverterFactory.create())
+            .client(client)
+            .build()
+    }
+
+    interface ConvenienceStoreService {
+        @GET("openApiService/data/getConvenienceStoreData.do")
+        fun getConvenienceStores(
+            @Query("serviceKey") serviceKey: String,
+            @Query("pageNo") pageNo: Int,
+            @Query("numOfRows") numOfRows: Int,
+            @Query("datatype") datatype: String,
+            @Query("Fclty_Cd") fcltyCd: String // 필터 (편의점 코드)
+        ): Call<ConvenienceStoreResponse>
+    }
+
+    @Root(name = "response", strict = false)
+    data class ConvenienceStoreResponse(
+        @field:Element(name = "header")
+        var header: Header? = null,
+
+        @field:Element(name = "body")
+        var body: Body? = null
+    )
+
+    @Root(name = "header", strict = false)
+    data class Header(
+        @field:Element(name = "resultCode")
+        var resultCode: String? = null,
+
+        @field:Element(name = "resultMsg")
+        var resultMsg: String? = null
+    )
+
+    @Root(name = "body", strict = false)
+    data class Body(
+        @field:Element(name = "items")
+        var items: Items? = null
+    )
+
+    @Root(name = "items", strict = false)
+    data class Items(
+        @field:ElementList(name = "item", inline = true)
+        var itemList: List<Item>? = null
+    )
+
+    @Root(name = "item", strict = false)
+    data class Item(
+        @field:Element(name = "name", required = false)
+        var name: String? = null,
+
+        @field:Element(name = "address", required = false)
+        var address: String? = null,
+
+        @field:Element(name = "latitude", required = false)
+        var latitude: Double? = null,
+
+        @field:Element(name = "longitude", required = false)
+        var longitude: Double? = null
+    )
+
+    data class ConvenienceStore(
+        @SerializedName("CONV_STORE_NAME")
+        val name: String,
+        @SerializedName("CONV_STORE_ADDR")
+        val address: String,
+        @SerializedName("LAT")
+        val latitude: Double,
+        @SerializedName("LNG")
+        val longitude: Double
+    )
+
+    data class Cctv(val name: String, val address: String, val latitude: Double, val longitude: Double)
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMarkerClickListener(this)
@@ -138,10 +242,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun initializeMap() {
         val seoul = LatLng(37.5665, 126.9780)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12.0f))
-        addMarkers()
+        addPoliceStationMarkers()
+        loadCctvData()
+        loadConvenienceStores()
+        createHeatmap(seoul)
     }
 
-    private fun addMarkers() {
+    private fun addPoliceStationMarkers() {
         val policeStations = listOf(
             PoliceStation("서울특별시경찰청", "서울시 종로구 사직로8길 31", 37.575935, 126.979196),
             PoliceStation("서울강남경찰서", "서울시 강남구 테헤란로 114길 11", 37.499176, 127.027672),
@@ -187,6 +294,102 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    private fun loadCctvData(): List<LatLng> {
+        val cctvs = mutableListOf<LatLng>()
+        try {
+            val json = assets.open("cctv_data.json").bufferedReader().use { it.readText() }
+            val jsonObject = JSONObject(json)
+            val dataArray = jsonObject.getJSONArray("DATA")
+
+            for (i in 0 until dataArray.length()) {
+                val obj = dataArray.getJSONObject(i)
+                val lat = obj.getDouble("wgsxpt")
+                val lng = obj.getDouble("wgsypt")
+                cctvs.add(LatLng(lat, lng))
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        Log.d("MainActivity", "Loaded ${cctvs.size} data points")
+        return cctvs
+    }
+
+    private fun addCctvMarkers(cctvs: List<Cctv>) {
+        //기존의 cctv 마커 초기화
+        cctvMarkers.clear()
+
+        for (cctv in cctvs) {
+            val position = LatLng(cctv.latitude, cctv.longitude)
+            val markerOptions = MarkerOptions()
+                .position(position)
+                .title(cctv.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+
+            val marker = mMap.addMarker(markerOptions)
+            marker?.tag = cctv
+            if (marker != null) {
+                cctvMarkers.add(marker)
+            }
+        }
+    }
+
+    private fun loadConvenienceStores() {
+        val service = createRetrofit().create(ConvenienceStoreService::class.java)
+
+        val call = service.getConvenienceStores(
+            serviceKey = "9BPONXOB-9BPO-9BPO-9BPO-9BPONXOB24",
+            pageNo = 1,
+            numOfRows = 1000,
+            datatype = "xml",
+            fcltyCd = "509010"
+        )
+        call.enqueue(object : Callback<ConvenienceStoreResponse> {
+            override fun onResponse(call: Call<ConvenienceStoreResponse>, response: Response<ConvenienceStoreResponse>) {
+                if (response.isSuccessful) {
+                    val items = response.body()?.body?.items?.itemList
+                    if (items != null) {
+                        val convenienceStores = items.map { item ->
+                            ConvenienceStore(
+                                name = item.name ?: "",
+                                address = item.address ?: "",
+                                latitude = item.latitude ?: 0.0,
+                                longitude = item.longitude ?: 0.0
+                            )
+                        }
+                        addConvenienceStoreMarkers(convenienceStores)
+                    } else {
+                        Toast.makeText(this@MainActivity, "No convenience stores found.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@MainActivity, "Failed to get convenience stores.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ConvenienceStoreResponse>, t: Throwable) {
+                Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun addConvenienceStoreMarkers(stores: List<ConvenienceStore>) {
+        convenienceStoreMarkers.clear()
+        for (store in stores) {
+            val position = LatLng(store.latitude, store.longitude)
+            val markerOptions = MarkerOptions().position(position).title(store.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+            val marker = mMap.addMarker(markerOptions)
+            marker?.tag = store
+            if (marker != null) {
+                convenienceStoreMarkers.add(marker)
+            }
+        }
+    }
+
+    private fun showMarkers(markers: List<Marker>) {
+        markers.forEach { it.isVisible = true }
+    }
+
 
     private fun getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -199,14 +402,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    private fun createHeatmap(data: List<LatLng>) {
-        val weightedLatLngs = data.map { WeightedLatLng(it) }
-        val heatmapProvider = HeatmapTileProvider.Builder()
+    private fun createHeatmap(currentLocation: LatLng) {
+        val data = loadCctvData()
+        val filteredData = data.filter { location ->
+            val distance = FloatArray(1)
+            Location.distanceBetween(
+                currentLocation.latitude,
+                currentLocation.longitude,
+                location.latitude,
+                location.longitude,
+                distance
+            )
+            distance[0] < 5000 // 5km radius
+        }
+
+        if (filteredData.isEmpty()) {
+            Log.e("MapActivity", "No data found for heatmap.")
+            return
+        }
+
+        val weightedLatLngs =
+            filteredData.map { WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0) }
+        val provider = HeatmapTileProvider.Builder()
             .weightedData(weightedLatLngs)
-            .radius(50)
             .build()
-        mMap.addTileOverlay(TileOverlayOptions().tileProvider(heatmapProvider))
+
+        mMap.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
+
 
     // 상단 옵션 메뉴
     private fun showPopupMenu(view: android.view.View) {
@@ -252,7 +475,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return false
     }
 
-    interface GooglePlacesService {
+
+interface GooglePlacesService {
         @GET("nearbysearch/json")
         fun getNearbyPlaces(
             @Query("type") type: String,
@@ -266,4 +490,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     data class Place(val name: String, val geometry: Geometry)
     data class Geometry(val location: LocationDetails)
     data class LocationDetails(val lat: Double, val lng: Double)
+}
+
+class PackageAddedReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        // BroadcastReceiver에서 메인 스레드에서 수행할 작업 최소화
+        if (intent?.action == Intent.ACTION_PACKAGE_ADDED) {
+            // 긴 작업은 서비스나 워커로 이동
+            context?.let {
+                val serviceIntent = Intent(it, HandlePackageAddedService::class.java)
+                serviceIntent.putExtra("packageName", intent.data?.encodedSchemeSpecificPart)
+                it.startService(serviceIntent)
+            }
+        }
+    }
+}
+
+class HandlePackageAddedService : IntentService("HandlePackageAddedService") {
+    override fun onHandleIntent(intent: Intent?) {
+        // 백그라운드에서 작업 수행
+        val packageName = intent?.getStringExtra("packageName")
+        // 패키지 추가 처리 로직
+    }
 }

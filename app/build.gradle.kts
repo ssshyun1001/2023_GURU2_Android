@@ -62,6 +62,10 @@ dependencies {
     //Google Play Services 라이브러리가 포함되어 있는지 확인
     implementation("com.google.android.gms:play-services-maps:18.0.2")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    //편의점 API 접근
+    implementation("org.simpleframework:simple-xml:2.7.1")
+    implementation("com.squareup.retrofit2:converter-simplexml:2.9.0")
+
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
