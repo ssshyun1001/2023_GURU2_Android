@@ -9,9 +9,9 @@
 
 <br>
 
-![Video Label](http://img.youtube.com/vi/AwrFPJk_BGU/0.jpg)
+![Video Label](http://img.youtube.com/vi/iQmkeTI_iS4/0.jpg)
 
-- [어플리케이션 유튜브 링크](https://youtu.be/AwrFPJk_BGU)
+- [어플리케이션 유튜브 링크](https://youtu.be/iQmkeTI_iS4)
 
 <br>
 
@@ -19,13 +19,13 @@
 
 : 밤길을 홀로 걸으며 *무섭다고* 느끼신 경험, 다들 한 번쯤을 있으셨을 텐데요. 
 
-: 저희는 이러한 경험으로부터 밤길을 안전하게 귀가할 수 있도록 돕는 앱을 개발했습니다.
+: 저희는 이러한 경험으로부터 밤길을 안전하게 귀가할 수 있도록 돕는 기능을 담은 앱을 개발했습니다.
 
 <br>
 
 ## How to build
 
-1.
+1. (apk 다운로드 링크 미구현)
 
 <br>
 <br>
@@ -38,6 +38,18 @@
 <br>
 
 ## Changelog
+- <code>2024/08/02</code>
+
+  UI 최종 수정 및 폰트 변경
+
+  Map 기능 Main으로 통합
+
+  설정 id 전달 오류 수정
+
+  지도 시작 오류 수정, Settings 전화번호 추가시 예외 처리 추가
+
+<br>
+
 - <code>2024/08/01</code>
 
   cctv, 편의점 위치 지도 API 추가
@@ -55,6 +67,10 @@
   Settings 화면 저장 버튼 오류 수정, 사이렌 버튼 출력 오류 수정, Call 종료 버튼 오류 수정
 
   불필요해진 일부 파일 제거 및 정리
+
+  편의점 위치 로드 오류 수정
+
+  버튼의 불필요한 딜레이 제거
 
 <br>
 
