@@ -62,9 +62,11 @@ dependencies {
     //Google Play Services 라이브러리가 포함되어 있는지 확인
     implementation("com.google.android.gms:play-services-maps:18.0.2")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    //편의점 API 접근
-    implementation("org.simpleframework:simple-xml:2.7.1")
-    implementation("com.squareup.retrofit2:converter-simplexml:2.9.0")
+    // CSV 파일 읽기 라이브러리
+    implementation("com.opencsv:opencsv:5.6")
+
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
 
 
     implementation("androidx.core:core-ktx:1.10.1")

@@ -6,13 +6,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
@@ -29,24 +32,28 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileOverlayOptions
-import com.google.gson.annotations.SerializedName
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import com.google.maps.android.heatmaps.WeightedLatLng
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import com.opencsv.CSVReader
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Root
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.io.IOException
+import java.io.InputStreamReader
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.google.gson.stream.JsonReader
+import kotlinx.coroutines.delay
+import org.json.JSONArray
+import kotlin.math.pow
+
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -72,6 +79,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private var heatmapTileOverlay: TileOverlay? = null
 
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +118,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         showPoliceStations.setOnClickListener { showMarkers(policeMarkers) }
         showCctvs.setOnClickListener { showMarkers(cctvMarkers) }
         showConvenienceStores.setOnClickListener { showMarkers(convenienceStoreMarkers) }
+
+        // Coroutine을 사용하여 긴 작업을 백그라운드에서 수행
+        coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                performLongRunningOperation()
+            }
+            // 작업 완료 후 UI 업데이트
+        }
     }
+
     private fun checkAndRequestPermissions() {
         // 요청할 권한 목록
         val requiredPermissions = arrayOf(
@@ -127,15 +144,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         // 승인되지 않은 권한이 있으면 권한 요청 실행
         if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), PERMISSION_REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                PERMISSION_REQUEST_CODE
+            )
         } else {
             // 권한이 이미 승인된 경우 initializeMap 실행
-            val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
             mapFragment?.getMapAsync(this)
         }
     }
+
     // 권한 요청 결과 처리
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
             var allPermissionsGranted = true
@@ -149,96 +176,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
             if (allPermissionsGranted) {
                 // Initialize the map
-                val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+                val mapFragment =
+                    supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
                 mapFragment?.getMapAsync(this)
             }
         }
     }
 
-    fun createRetrofit(): Retrofit {
-        // 로깅 인터셉터 설정
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BODY
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(logging) // 로깅 인터셉터 추가
-            .build()
-
-        return Retrofit.Builder()
-            .baseUrl("https://safemap.go.kr/")
-            .addConverterFactory(SimpleXmlConverterFactory.create())
-            .client(client)
-            .build()
-    }
-
-    interface ConvenienceStoreService {
-        @GET("openApiService/data/getConvenienceStoreData.do")
-        fun getConvenienceStores(
-            @Query("serviceKey") serviceKey: String,
-            @Query("pageNo") pageNo: Int,
-            @Query("numOfRows") numOfRows: Int,
-            @Query("datatype") datatype: String,
-            @Query("Fclty_Cd") fcltyCd: String // 필터 (편의점 코드)
-        ): Call<ConvenienceStoreResponse>
-    }
-
-    @Root(name = "response", strict = false)
-    data class ConvenienceStoreResponse(
-        @field:Element(name = "header")
-        var header: Header? = null,
-
-        @field:Element(name = "body")
-        var body: Body? = null
-    )
-
-    @Root(name = "header", strict = false)
-    data class Header(
-        @field:Element(name = "resultCode")
-        var resultCode: String? = null,
-
-        @field:Element(name = "resultMsg")
-        var resultMsg: String? = null
-    )
-
-    @Root(name = "body", strict = false)
-    data class Body(
-        @field:Element(name = "items")
-        var items: Items? = null
-    )
-
-    @Root(name = "items", strict = false)
-    data class Items(
-        @field:ElementList(name = "item", inline = true)
-        var itemList: List<Item>? = null
-    )
-
-    @Root(name = "item", strict = false)
-    data class Item(
-        @field:Element(name = "name", required = false)
-        var name: String? = null,
-
-        @field:Element(name = "address", required = false)
-        var address: String? = null,
-
-        @field:Element(name = "latitude", required = false)
-        var latitude: Double? = null,
-
-        @field:Element(name = "longitude", required = false)
-        var longitude: Double? = null
-    )
-
-    data class ConvenienceStore(
-        @SerializedName("CONV_STORE_NAME")
-        val name: String,
-        @SerializedName("CONV_STORE_ADDR")
-        val address: String,
-        @SerializedName("LAT")
-        val latitude: Double,
-        @SerializedName("LNG")
-        val longitude: Double
-    )
-
-    data class Cctv(val name: String, val address: String, val latitude: Double, val longitude: Double)
+    //data class Cctv(val name: String, val address: String, val latitude: Double, val longitude: Double)
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -252,9 +197,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12.0f))
         addPoliceStationMarkers()
         loadCctvData()
-        loadConvenienceStores()
+        addConvenienceStoresMarker()
         createHeatmap(seoul)
     }
+
 
     private fun addPoliceStationMarkers() {
         val policeStations = listOf(
@@ -302,6 +248,114 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    private var currentLatLng: LatLng? = null
+
+    private fun getCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    val currentLatLng = LatLng(it.latitude, it.longitude)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
+                    createHeatmap(currentLatLng)
+                }
+            }
+        }
+    }
+
+    data class ConvenienceStore(val name: String, val latitude: Double, val longitude: Double)
+
+    private fun addConvenienceStoresMarker() {
+        try {
+            val inputStreamReader = InputStreamReader(assets.open("convenienceStores_data.json"))
+            val jsonReader = JsonReader(inputStreamReader)
+
+            val convenienceStores = mutableListOf<ConvenienceStore>()
+
+            jsonReader.beginArray()
+
+            while (jsonReader.hasNext()) {
+                jsonReader.beginObject()
+                var name = ""
+                var latStr = ""
+                var lonStr = ""
+
+                while (jsonReader.hasNext()) {
+                    when (jsonReader.nextName()) {
+                        "상호명" -> name = jsonReader.nextString()
+                        "위도" -> latStr = jsonReader.nextString()
+                        "경도" -> lonStr = jsonReader.nextString()
+                        else -> jsonReader.skipValue()
+                    }
+                }
+                jsonReader.endObject()
+
+                // Check if latStr and lonStr are not empty
+                val lat = latStr.toDoubleOrNull()
+                val lon = lonStr.toDoubleOrNull()
+
+                if (lat != null && lon != null) {
+                    val convenienceLatLng = LatLng(lat, lon)
+
+                    // 현재 위치와 편의점 간 거리 계산
+                    val distance = currentLatLng?.let { calculateDistance(it, convenienceLatLng) }
+
+                    // 5km 이내의 편의점만 마커로 추가
+                    if (distance != null && distance <= 5.0) {
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(convenienceLatLng)
+                                .title(name)
+                                .icon(
+                                    BitmapDescriptorFactory.fromBitmap(
+                                        createCustomMarkerBitmap()
+                                    )
+                                )
+                        )
+                    }
+                }
+            }
+
+            jsonReader.endArray()
+            jsonReader.close()
+        } catch (e: Exception) {
+            Log.e("JSON_DEBUG", "Error reading JSON data", e)
+        }
+    }
+
+
+    // 두 지점 간 거리 계산 (킬로미터 단위)
+    private fun calculateDistance(latLng1: LatLng, latLng2: LatLng): Double {
+        val earthRadius = 6371 // 지구 반지름 (킬로미터)
+        val dLat = Math.toRadians(latLng2.latitude - latLng1.latitude)
+        val dLng = Math.toRadians(latLng2.longitude - latLng1.longitude)
+        val a = Math.sin(dLat / 2).pow(2.0) +
+                Math.cos(Math.toRadians(latLng1.latitude)) * Math.cos(Math.toRadians(latLng2.latitude)) *
+                Math.sin(dLng / 2).pow(2.0)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return earthRadius * c
+    }
+
+    private fun createCustomMarkerBitmap(): Bitmap {
+        val width = 60 // Desired width of the marker
+        val height = 60 // Desired height of the marker
+
+        // Create a Bitmap object and canvas to draw on it
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Draw a blue circle as a marker
+        val paint = Paint()
+        paint.color = Color.BLUE // Blue color
+        paint.isAntiAlias = true
+        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), (width / 2).toFloat(), paint)
+
+        return bitmap
+    }
+
     private fun loadCctvData(): List<LatLng> {
         val cctvs = mutableListOf<LatLng>()
         try {
@@ -324,103 +378,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return cctvs
     }
 
-    private fun addCctvMarkers(cctvs: List<Cctv>) {
-        //기존의 cctv 마커 초기화
-        cctvMarkers.clear()
-
-        for (cctv in cctvs) {
-            val position = LatLng(cctv.latitude, cctv.longitude)
-            val markerOptions = MarkerOptions()
-                .position(position)
-                .title(cctv.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-
-            val marker = mMap.addMarker(markerOptions)
-            marker?.tag = cctv
-            if (marker != null) {
-                cctvMarkers.add(marker)
-            }
-        }
-    }
-
-    private fun loadConvenienceStores() {
-        val service = createRetrofit().create(ConvenienceStoreService::class.java)
-
-        val call = service.getConvenienceStores(
-            serviceKey = "9BPONXOB-9BPO-9BPO-9BPO-9BPONXOB24",
-            pageNo = 1,
-            numOfRows = 1000,
-            datatype = "xml",
-            fcltyCd = "509010"
-        )
-        call.enqueue(object : Callback<ConvenienceStoreResponse> {
-            override fun onResponse(call: Call<ConvenienceStoreResponse>, response: Response<ConvenienceStoreResponse>) {
-                if (response.isSuccessful) {
-                    val items = response.body()?.body?.items?.itemList
-                    if (items != null) {
-                        val convenienceStores = items.map { item ->
-                            ConvenienceStore(
-                                name = item.name ?: "",
-                                address = item.address ?: "",
-                                latitude = item.latitude ?: 0.0,
-                                longitude = item.longitude ?: 0.0
-                            )
-                        }
-                        addConvenienceStoreMarkers(convenienceStores)
-                    } else {
-                        Toast.makeText(this@MainActivity, "No convenience stores found.", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this@MainActivity, "Failed to get convenience stores.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<ConvenienceStoreResponse>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun addConvenienceStoreMarkers(stores: List<ConvenienceStore>) {
-        convenienceStoreMarkers.clear()
-        for (store in stores) {
-            val position = LatLng(store.latitude, store.longitude)
-            val markerOptions = MarkerOptions().position(position).title(store.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-            val marker = mMap.addMarker(markerOptions)
-            marker?.tag = store
-            if (marker != null) {
-                convenienceStoreMarkers.add(marker)
-            }
-        }
-    }
-
     private fun showMarkers(markers: List<Marker>) {
         markers.forEach { it.isVisible = true }
     }
 
-
-    private fun getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    val currentLatLng = LatLng(it.latitude, it.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
-                    createHeatmap(currentLatLng)
-                }
-            }
-        }
-    }
-
     private fun createHeatmap(currentLocation: LatLng) {
         val data = loadCctvData() // CCTV 데이터 로드
-
-        if (data.isEmpty()) {
-            Log.e("MapActivity", "No data found for heatmap.")
-            return
-        }
-
-        // 5km를 미터로 변환
-        val radiusInMeters = 5000
 
         // 현재 위치를 기준으로 5km 이내의 CCTV 데이터 필터링
         val filteredData = data.filter { location ->
@@ -432,12 +395,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 location.longitude,
                 distance
             )
-            distance[0] < radiusInMeters
-        }
-
-        if (filteredData.isEmpty()) {
-            Log.e("MapActivity", "No data found within the 5km radius.")
-            return
+            distance[0] < 5000
         }
 
         // 필터링된 CCTV 데이터로 WeightedLatLng 리스트 생성
@@ -458,6 +416,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 
+
+
     // 상단 옵션 메뉴
     private fun showPopupMenu(view: android.view.View) {
         val popup = PopupMenu(this, view)
@@ -470,6 +430,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     startActivity(intent)
                     true
                 }
+
                 R.id.action_settings -> {
                     // Settings 액티비티로 이동하면서 LOGIN_ID를 전달합니다.
                     val intent = Intent(this, Settings::class.java)
@@ -477,6 +438,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     startActivity(intent)
                     true
                 }
+
                 else -> false
             }
         }
@@ -503,7 +465,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 
-interface GooglePlacesService {
+    interface GooglePlacesService {
         @GET("nearbysearch/json")
         fun getNearbyPlaces(
             @Query("type") type: String,
@@ -517,26 +479,19 @@ interface GooglePlacesService {
     data class Place(val name: String, val geometry: Geometry)
     data class Geometry(val location: LocationDetails)
     data class LocationDetails(val lat: Double, val lng: Double)
-}
 
-class PackageAddedReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        // BroadcastReceiver에서 메인 스레드에서 수행할 작업 최소화
-        if (intent?.action == Intent.ACTION_PACKAGE_ADDED) {
-            // 긴 작업은 서비스나 워커로 이동
-            context?.let {
-                val serviceIntent = Intent(it, HandlePackageAddedService::class.java)
-                serviceIntent.putExtra("packageName", intent.data?.encodedSchemeSpecificPart)
-                it.startService(serviceIntent)
+    private fun performLongRunningOperation() {
+        coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                // 긴 작업을 백그라운드 스레드에서 수행
+                delay(2000)
+                loadCctvData()
+                addConvenienceStoresMarker()
             }
         }
     }
-}
-
-class HandlePackageAddedService : IntentService("HandlePackageAddedService") {
-    override fun onHandleIntent(intent: Intent?) {
-        // 백그라운드에서 작업 수행
-        val packageName = intent?.getStringExtra("packageName")
-        // 패키지 추가 처리 로직
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineScope.cancel()
     }
 }

@@ -3,6 +3,7 @@ package com.example.guru2_dsjouju_app
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +32,7 @@ class Tutorial : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         backButton = findViewById(R.id.tuto_back_btn)
 
-        var adapter = TutorialAdapter(this, images)
+        val adapter = TutorialAdapter(this, images)
         viewPager.adapter = adapter
 
         setupDots()
@@ -88,11 +89,12 @@ class Tutorial : AppCompatActivity() {
         RecyclerView.Adapter<TutorialAdapter.TutorialViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TutorialViewHolder {
-            val view = LayoutInflater.from(context).inflate(R.layout.tutorial_item, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.tutorial_item, parent, false)
             return TutorialViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: TutorialViewHolder, position: Int) {
+            Log.d("TutorialAdapter", "Binding image at position $position")
             holder.imageView.setImageResource(images[position])
         }
 
