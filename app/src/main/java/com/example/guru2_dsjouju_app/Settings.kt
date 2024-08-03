@@ -192,14 +192,21 @@ class Settings : AppCompatActivity() {
 
     private fun addContact() {
         val phone = editTextContact.text.toString().trim()
+
+        // 전화번호가 숫자로만 이루어졌는지, 그리고 11자리인지 확인
+        val phoneRegex = Regex("^\\d{11}\$")  // 11자리 숫자만 허용
         if (phone.isNotEmpty()) {
-            val exists = contactsDAO.getContactByPhone(phone)
-            if (exists) {
-                Toast.makeText(this, "이미 존재하는 번호입니다.", Toast.LENGTH_SHORT).show()
+            if (!phoneRegex.matches(phone)) {
+                Toast.makeText(this, "전화번호는 01012345678 형식으로 11자리 숫자만 가능합니다.", Toast.LENGTH_SHORT).show()
             } else {
-                contactsDAO.insertContact(phone)
-                editTextContact.text.clear()
-                updateContactList()
+                val exists = contactsDAO.getContactByPhone(phone)
+                if (exists) {
+                    Toast.makeText(this, "이미 존재하는 번호입니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    contactsDAO.insertContact(phone)
+                    editTextContact.text.clear()
+                    updateContactList()
+                }
             }
         } else {
             Toast.makeText(this, "연락처를 입력하세요.", Toast.LENGTH_SHORT).show()

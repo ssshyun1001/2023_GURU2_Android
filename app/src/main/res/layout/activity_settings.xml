@@ -72,7 +72,7 @@
                 android:id="@+id/edit_text_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="연락처 입력"
+                android:hint="연락처 입력 (01012345678) "
                 android:inputType="phone"
                 android:layout_marginTop="4dp"
                 style="@style/custom_font"/>
