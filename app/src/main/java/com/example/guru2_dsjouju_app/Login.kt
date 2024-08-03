@@ -122,6 +122,23 @@ class Login : AppCompatActivity() {
             }
         })
 
+        // 전화번호 형식 검사
+        etSignupPhone.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val phoneRegex = Regex("^\\d{11}\$")
+                val phoneNumber = s?.toString() ?: ""
+                if (!phoneRegex.matches(phoneNumber)) {
+                    etSignupPhone.error = "전화번호는 11자리 숫자로만 이루어져야 합니다."
+                } else {
+                    etSignupPhone.error = null // 형식이 올바르면 에러 메시지 제거
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         btnCheckId.setOnClickListener {
             val id = etSignupId.text.toString().trim()
             if (userDAO.checkIfIdExists(id)) {
@@ -147,11 +164,17 @@ class Login : AppCompatActivity() {
                 if (!isIdChecked) {
                     Toast.makeText(this, "아이디 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show()
                 } else if (id.length in 8..12 && password.length in 8..12) {
-                    if (userDAO.insertUser(id, password, phone)) {
-                        Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
+                    // 전화번호 형식 검사
+                    val phoneRegex = Regex("^\\d{11}\$")
+                    if (!phoneRegex.matches(phone)) {
+                        Toast.makeText(this, "전화번호는 01012345678 형식으로 11자리 숫자여야 합니다.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                        if (userDAO.insertUser(id, password, phone)) {
+                            Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                        } else {
+                            Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
                     Toast.makeText(this, "아이디와 비밀번호는 8자리 이상 12자리 이하로 입력해 주세요.", Toast.LENGTH_SHORT).show()

@@ -197,7 +197,7 @@ class Settings : AppCompatActivity() {
         val phoneRegex = Regex("^\\d{11}\$")  // 11자리 숫자만 허용
         if (phone.isNotEmpty()) {
             if (!phoneRegex.matches(phone)) {
-                Toast.makeText(this, "전화번호는 01012345678 형식으로 11자리 숫자만 가능합니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "전화번호는 11자리 숫자로만 이루어져야 합니다.", Toast.LENGTH_SHORT).show()
             } else {
                 val exists = contactsDAO.getContactByPhone(phone)
                 if (exists) {
