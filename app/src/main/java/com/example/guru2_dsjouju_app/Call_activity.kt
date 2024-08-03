@@ -18,6 +18,7 @@ class Call_activity : AppCompatActivity() {
     private lateinit var sosManager: SosManager
     private lateinit var sosButton: ImageButton
     private lateinit var stopButton: ImageButton
+    private lateinit var sosIsRunning: SosIsRunning
 
     private lateinit var loginID: String
 
@@ -53,6 +54,11 @@ class Call_activity : AppCompatActivity() {
         // SosManager 인스턴스 생성 시 loginID 전달
         sosManager = SosManager(this, sosButton, loginID)
 
+        sosManager.updateSosButtonImage()
+
+        // Application 클래스 인스턴스 얻기
+        sosIsRunning = application as SosIsRunning
+
         // 사이렌 버튼 클릭 리스너 설정
         sirenButton.setOnClickListener {
             // 호출 소리 중지
@@ -66,7 +72,8 @@ class Call_activity : AppCompatActivity() {
 
             // 사이렌 페이지로 이동
             val intent = Intent(this, Siren_running::class.java).apply {
-                putExtra("LOGIN_ID", loginID)  // 로그인 ID 전달
+                putExtra("LOGIN_ID", loginID)
+                finish()
             }
             startActivity(intent)
         }
@@ -74,6 +81,7 @@ class Call_activity : AppCompatActivity() {
         sosButton.setOnClickListener { sosManager.showSosDialog() }
         sosButton.setOnLongClickListener {
             sosManager.handleLongPress()
+            sosIsRunning.isSosRunning = false
             true
         }
 

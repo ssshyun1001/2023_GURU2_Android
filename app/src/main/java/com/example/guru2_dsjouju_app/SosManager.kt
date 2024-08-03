@@ -8,7 +8,8 @@ import androidx.appcompat.app.AlertDialog
 
 class SosManager(private val context: Context, private val sosButton: ImageButton, private val loginID: String) {
 
-    private var isSosRunning = false
+    private val sos: SosIsRunning = context.applicationContext as SosIsRunning
+
     private var sosCountdownTimer: CountDownTimer? = null
     private var stopCountdownTimer: CountDownTimer? = null
     private var periodicMessageTimer: CountDownTimer? = null
@@ -16,9 +17,16 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
 
     private val sendMessage = SendMessage(context, loginID)
 
+    fun updateSosButtonImage() {
+        when {
+            sos.isSosRunning -> sosButton.setImageResource(R.drawable.app_icon_sos_o)  // SOS 작동 중 이미지
+            else -> sosButton.setImageResource(R.drawable.app_icon_sos_x)        // SOS 비작동 이미지
+        }
+    }
+
     fun showSosDialog() {
-        if (isSosRunning) {
-            Toast.makeText(context, "SOS 도움 요청 실행, Off를 원하시면 길게 눌러주세요", Toast.LENGTH_LONG).show()
+        if (sos.isSosRunning) {
+            Toast.makeText(context, "SOS 도움 요청 실행중, Off를 원하시면 길게 눌러주세요", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -40,7 +48,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
 
         sosCountdownTimer = object : CountDownTimer(3500, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                alert.setMessage("SOS 도움 요청을 시작하시겠습니까?\n자동 선택까지 ${millisUntilFinished / 1000}초 남았습니다.")
+                alert.setMessage("SOS 도움 요청을 시작하시겠습니까?\n자동 시작까지 ${millisUntilFinished / 1000}초 남았습니다.")
             }
 
             override fun onFinish() {
@@ -51,7 +59,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
     }
 
     private fun startSos() {
-        isSosRunning = true
+        sos.isSosRunning = true
         sosButton.setImageResource(R.drawable.app_icon_sos_o) // 아이콘 변경 (적절한 아이콘으로 대체)
         Toast.makeText(context, "SOS 도움 요청이 시작되었습니다", Toast.LENGTH_LONG).show()
 
@@ -59,30 +67,11 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
     }
 
     private fun stopSos() {
-        isSosRunning = false
+        sos.isSosRunning = false
         sosButton.setImageResource(R.drawable.app_icon_sos_x)
         Toast.makeText(context, "SOS 도움 요청이 종료되었습니다", Toast.LENGTH_LONG).show()
 
         periodicMessageTimer?.cancel()
-    }
-
-    private fun setSosUpdateFrequency(frequencyMillis: Long) {
-        if (isSosRunning) {
-            periodicMessageTimer?.cancel()
-            periodicMessageTimer = object : CountDownTimer(Long.MAX_VALUE, frequencyMillis) {
-                override fun onTick(millisUntilFinished: Long) {
-                    sendMessage.sendLocationSMS()
-                }
-
-                override fun onFinish() {}
-            }.start()
-        }
-    }
-
-    fun handleLongPress() {
-        if (isSosRunning) {
-            startStopCountdown()
-        }
     }
 
     private fun startPeriodicMessage() {
@@ -91,6 +80,29 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
         val intervalMillis = minutes * 60 * 1000L
 
         setSosUpdateFrequency(intervalMillis)
+    }
+
+    private fun setSosUpdateFrequency(frequencyMillis: Long) {
+        periodicMessageTimer?.cancel()
+        if (sos.isSosRunning) {
+            periodicMessageTimer = object : CountDownTimer(Long.MAX_VALUE, frequencyMillis) {
+                override fun onTick(millisUntilFinished: Long) {
+                    if (sos.isSosRunning) {
+                        sendMessage.sendLocationSMS()
+                    } else {
+                        this.cancel()
+                    }
+                }
+
+                override fun onFinish() {}
+            }.start()
+        }
+    }
+
+    fun handleLongPress() {
+        if (sos.isSosRunning) {
+            startStopCountdown()
+        }
     }
 
     private fun startStopCountdown() {

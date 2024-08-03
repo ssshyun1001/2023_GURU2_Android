@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var sirenButton: ImageButton
     private lateinit var sosManager: SosManager
     private lateinit var sosButton: ImageButton
+    private lateinit var sosIsRunning: SosIsRunning
     private lateinit var callButton: ImageButton
 
     private lateinit var loginID: String
@@ -81,6 +82,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // 로그인 ID를 인텐트에서 추출
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
 
+        // Application 클래스 인스턴스 얻기
+        sosIsRunning = application as SosIsRunning
+
         homeoptionmenubtn = findViewById(R.id.home_option_menu_btn)
 
         sirenButton = findViewById(R.id.button_siren)
@@ -94,12 +98,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         sosButton.setOnClickListener { sosManager.showSosDialog() }
         sosButton.setOnLongClickListener {
             sosManager.handleLongPress()
+            sosIsRunning.isSosRunning = false
             true
         }
         callButton.setOnClickListener { startCallActivity() }
 
         // 권한이 필요한 경우 요청
         checkAndRequestPermissions()
+
+        sosManager.updateSosButtonImage()
 
         val showPoliceStations: Button = findViewById(R.id.policeStation)
         val showConvenienceStores: Button = findViewById(R.id.convenientStore)
@@ -448,12 +455,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Start Siren activity
         val intent = Intent(this, Siren_running::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun startCallActivity() {
         // Start Call activity
         val intent = Intent(this, ReceiveCall::class.java)
         startActivity(intent)
+        finish()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {

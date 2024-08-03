@@ -19,6 +19,7 @@ class Siren_running : AppCompatActivity() {
 
     private lateinit var sosManager: SosManager
     private lateinit var sosButton: ImageButton
+    private lateinit var sosIsRunning: SosIsRunning
 
     private var mediaPlayer: MediaPlayer? = null
     private var handler: Handler = Handler(Looper.getMainLooper())
@@ -45,9 +46,13 @@ class Siren_running : AppCompatActivity() {
 
         sosManager = SosManager(this, sosButton, loginID)
 
+        // Application 클래스 인스턴스 얻기
+        sosIsRunning = application as SosIsRunning
+
         sosButton.setOnClickListener { sosManager.showSosDialog() }
         sosButton.setOnLongClickListener {
             sosManager.handleLongPress()
+            sosIsRunning.isSosRunning = false
             true
         }
 
@@ -55,6 +60,8 @@ class Siren_running : AppCompatActivity() {
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
         showSirenDialog()
+
+        sosManager.updateSosButtonImage()
 
         // 사이렌 시작 버튼 초기화
         val toggleSirenButton: ImageButton = findViewById(R.id.toggleSirenButton)
@@ -154,7 +161,8 @@ class Siren_running : AppCompatActivity() {
 
         // 오디오 포커스 해제
         audioManager.abandonAudioFocus(audioFocusChangeListener)
-
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
         finish()
     }
 }
