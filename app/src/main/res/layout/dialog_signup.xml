@@ -60,6 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/box_id"
+        android:inputType="phone"
         android:ems="10"
         android:hint="휴대폰번호"
         android:textSize="15dp"/>

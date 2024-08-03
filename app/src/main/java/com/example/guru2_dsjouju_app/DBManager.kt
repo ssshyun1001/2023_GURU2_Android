@@ -13,8 +13,6 @@ class DBManager(
     version: Int
 ) : SQLiteOpenHelper(context, name, factory, version) {
 
-
-
     override fun onCreate(db: SQLiteDatabase?) {
         // contacts 테이블 생성
         db!!.execSQL(
@@ -23,12 +21,6 @@ class DBManager(
                     "phone TEXT, " +
                     "PRIMARY KEY (id, phone))"
         )
-//        db.execSQL(
-//            "CREATE TABLE messages (" +
-//                    "id TEXT," +
-//                    "message TEXT," +
-//                    "PRIMARY KEY(id))"
-//        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -106,55 +98,3 @@ class ContactsDAO(private val context: Context, private val loginID: String) {
     // 연락처 클래스
     data class Contact(val id: String, val phone: String)
 }
-
-
-
-//class MessagesDAO(context: Context) {
-//
-//    private val dbManager = DBManager(context, "messagesDB", null, 1)
-//
-//    // 메시지 추가 메서드
-//    fun insertMessage(message: String) {
-//        val db = dbManager.writableDatabase
-//        val values = ContentValues().apply {
-//            put("message", message)
-//        }
-//        db.insert("messages", null, values)
-//        db.close()
-//    }
-//}
-//    // 메시지 삭제 메서드
-//    fun deleteMessage(id: Int) {
-//        val db = dbManager.writableDatabase
-//        db.delete("messages", "id = ?", arrayOf(id.toString()))
-//        db.close()
-//    }
-//
-//    // 메시지 수정 메서드
-//    fun updateMessage(id: Int, newMessage: String) {
-//        val db = dbManager.writableDatabase
-//        val values = ContentValues().apply {
-//            put("message", newMessage)
-//        }
-//        db.update("messages", values, "id = ?", arrayOf(id.toString()))
-//        db.close()
-//    }
-//
-//    // 모든 메시지 조회 메서드
-//    fun getAllMessages(): List<Message> {
-//        val db = dbManager.readableDatabase
-//        val cursor: Cursor = db.rawQuery("SELECT * FROM messages", null)
-//        val messages = mutableListOf<Message>()
-//        while (cursor.moveToNext()) {
-//            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-//            val message = cursor.getString(cursor.getColumnIndexOrThrow("message"))
-//            messages.add(Message(id, message))
-//        }
-//        cursor.close()
-//        db.close()
-//        return messages
-//    }
-//
-//    // 메시지 클래스
-//    data class Message(val id: Int, val message: String)
-//}

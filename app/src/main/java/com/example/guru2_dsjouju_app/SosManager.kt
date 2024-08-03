@@ -12,7 +12,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
     private var sosCountdownTimer: CountDownTimer? = null
     private var stopCountdownTimer: CountDownTimer? = null
     private var periodicMessageTimer: CountDownTimer? = null
-    private val sharedPreferences = context.getSharedPreferences("SirenPrefs", Context.MODE_PRIVATE)
+    private val sharedPreferences = context.getSharedPreferences("SettingsPrefs", Context.MODE_PRIVATE)
 
     private val sendMessage = SendMessage(context, loginID)
 
@@ -66,7 +66,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
         periodicMessageTimer?.cancel()
     }
 
-    fun setSosUpdateFrequency(frequencyMillis: Long) {
+    private fun setSosUpdateFrequency(frequencyMillis: Long) {
         if (isSosRunning) {
             periodicMessageTimer?.cancel()
             periodicMessageTimer = object : CountDownTimer(Long.MAX_VALUE, frequencyMillis) {

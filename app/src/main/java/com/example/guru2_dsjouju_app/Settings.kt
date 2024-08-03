@@ -92,18 +92,25 @@ class Settings : AppCompatActivity() {
 
         logoutButton = findViewById(R.id.logout_button)
 
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedFrequency = parent.getItemAtPosition(position).toString()
+                saveSpinnerSelection(selectedFrequency)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
 
         editTextSosMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // 텍스트를 바이트 배열로 변환하여 바이트 길이 확인
                 val byteLength = s?.toString()?.toByteArray(Charsets.UTF_8)?.size ?: 0
                 if (byteLength > 125) {
-                    // 바이트 길이가 140자를 초과하면 현재 바이트 수와 최대 바이트 수를 포함한 경고 메시지 표시
+                    // 바이트 길이가 125자를 초과하면 현재 바이트 수와 최대 바이트 수를 포함한 경고 메시지 표시
                     editTextSosMessage.error = "메시지 길이 제한 : ${byteLength}/140 byte"
                 } else {
-                    // 길이가 정상 범위일 때 에러 제거
                     editTextSosMessage.error = null
                 }
             }
@@ -112,14 +119,12 @@ class Settings : AppCompatActivity() {
                 // 바이트 길이가 140자를 초과할 경우 초과된 부분을 삭제
                 if (s != null && s.toString().toByteArray(Charsets.UTF_8).size >= 140) {
                     val maxLength = 140
-                    var length = 0
                     for (i in 0 until s.length) {
                         val byteLength = s.subSequence(0, i + 1).toString().toByteArray(Charsets.UTF_8).size
                         if (byteLength > maxLength) {
                             s.delete(i, s.length)
                             break
                         }
-                        length = i + 1
                     }
                 }
             }
@@ -243,13 +248,15 @@ class Settings : AppCompatActivity() {
 
         // MediaPlayer를 사용하여 사이렌 소리 재생
         val mediaPlayer = MediaPlayer.create(this, sirenType)
-        mediaPlayer.start()
-
-        // 3초 후에 소리 멈추기
-        Handler(Looper.getMainLooper()).postDelayed({
-            mediaPlayer.stop()
+        try {
+            mediaPlayer.start()
+            Handler(Looper.getMainLooper()).postDelayed({
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            }, 3000)
+        } finally {
             mediaPlayer.release()
-        }, 3000)
+        }
 
         Toast.makeText(this, "현재 사이렌 소리: $sirenText", Toast.LENGTH_SHORT).show()
     }

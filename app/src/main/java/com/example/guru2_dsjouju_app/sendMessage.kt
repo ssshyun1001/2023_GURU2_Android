@@ -50,7 +50,7 @@ class SendMessage(private val context: Context, private val loginID: String) {
                     smsManager.sendTextMessage(contact.phone, null, savedMessage, null, null)
                     smsManager.sendTextMessage(contact.phone, null, message, null, null)
                 }
-                Toast.makeText(context, "SOS 메시지 전송 : $savedMessage", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "메시지 전송 < $savedMessage >", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(context, "메시지 전송 중 오류가 발생했습니다: ${e.message}", Toast.LENGTH_LONG).show()
             }

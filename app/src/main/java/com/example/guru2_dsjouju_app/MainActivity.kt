@@ -1,9 +1,6 @@
 package com.example.guru2_dsjouju_app
 
 import android.Manifest
-import android.app.IntentService
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -32,26 +29,19 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileOverlayOptions
+import com.google.gson.stream.JsonReader
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import com.google.maps.android.heatmaps.WeightedLatLng
-import com.opencsv.CSVReader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
 import java.io.IOException
 import java.io.InputStreamReader
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
-import com.google.gson.stream.JsonReader
-import kotlinx.coroutines.delay
-import org.json.JSONArray
 import kotlin.math.pow
 
 
@@ -470,17 +460,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Handle marker click
         Toast.makeText(this, "${marker.title}", Toast.LENGTH_SHORT).show()
         return false
-    }
-
-
-    interface GooglePlacesService {
-        @GET("nearbysearch/json")
-        fun getNearbyPlaces(
-            @Query("type") type: String,
-            @Query("location") location: String,
-            @Query("radius") radius: Int,
-            @Query("key") key: String
-        ): Call<NearbyPlacesResponse>
     }
 
     data class NearbyPlacesResponse(val results: List<Place>)
