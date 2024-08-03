@@ -38,7 +38,7 @@
 <br>
 
 ## Changelog
-- <code>2024/08/02</code>
+- <code>2024/08/03</code>
 
   Main에 Map 코드 통합 완료
 
