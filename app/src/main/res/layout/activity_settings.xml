@@ -130,7 +130,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="소방차"
+                    android:text="민방위 사이렌"
                     style="@style/custom_font"/>
 
                 <RadioButton

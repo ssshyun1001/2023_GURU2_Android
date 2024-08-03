@@ -403,6 +403,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0)
         }
 
+        // weightedLatLngs가 비어 있는지 확인 ( 서현 : 제가 개인적으로 돌리다가 오류나서 추가했습니다 )
+        if (weightedLatLngs.isEmpty()) {
+            Log.e("Heatmap", "No input points provided for heatmap. Aborting creation.")
+            return
+        }
+        // 여기 세줄 추가했습니다.
+
         // HeatmapTileProvider 생성
         val provider = HeatmapTileProvider.Builder()
             .weightedData(weightedLatLngs)
@@ -414,6 +421,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // 새로운 HeatmapTileOverlay 추가
         heatmapTileOverlay = mMap.addTileOverlay(TileOverlayOptions().tileProvider(provider))
     }
+
 
 
 

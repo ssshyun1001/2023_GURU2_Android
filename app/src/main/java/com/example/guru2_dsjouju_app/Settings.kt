@@ -236,7 +236,7 @@ class Settings : AppCompatActivity() {
 
         val sirenType = when (selectedId) {
             R.id.radio_siren1 -> R.raw.police_siren
-            R.id.radio_siren2 -> R.raw.fire_trucks_siren
+            R.id.radio_siren2 -> R.raw.civil_defense_siren
             R.id.radio_siren3 -> R.raw.ambulance_siren
             else -> return
         }

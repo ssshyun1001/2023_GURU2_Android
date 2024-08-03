@@ -101,10 +101,12 @@ class Siren_running : AppCompatActivity() {
         val selectedSirenId = sharedPreferences.getInt("selected_siren", R.id.radio_siren1)
         val soundResId = when (selectedSirenId) {
             R.id.radio_siren1 -> R.raw.police_siren
-            R.id.radio_siren2 -> R.raw.fire_trucks_siren
+            R.id.radio_siren2 -> R.raw.civil_defense_siren
             R.id.radio_siren3 -> R.raw.ambulance_siren
             else -> R.raw.police_siren  // 기본 사이렌으로 경찰 사이렌 사용
         }
+
+
 
         val result = audioManager.requestAudioFocus(
             audioFocusChangeListener,
