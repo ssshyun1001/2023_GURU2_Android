@@ -16,6 +16,7 @@ import androidx.appcompat.widget.PopupMenu
 
 class Settings : AppCompatActivity() {
 
+    // UI 요소 및 변수 선언
     lateinit var setOptionMenuBtn: ImageButton
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -57,7 +58,7 @@ class Settings : AppCompatActivity() {
 
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
 
-        // Check if loginID is empty or null
+        // loginID가 비어 있지 않은지 확인하고, SharedPreferences에 저장
         if (loginID.isNotEmpty()) {
             sharedPreferences.edit()
                 .putString("loginID_save", loginID)
@@ -73,6 +74,7 @@ class Settings : AppCompatActivity() {
         loadData()
     }
 
+    // UI 요소 초기화
     private fun initializeUI() {
         setOptionMenuBtn = findViewById(R.id.set_option_menu_btn)
 
@@ -95,6 +97,7 @@ class Settings : AppCompatActivity() {
 
         logoutButton = findViewById(R.id.logout_button)
 
+        // 스피너 선택 항목 변경 시 처리
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedFrequency = parent.getItemAtPosition(position).toString()
@@ -105,6 +108,7 @@ class Settings : AppCompatActivity() {
             }
         }
 
+        // SOS 메시지 텍스트 변경 시 길이 제한 설정
         editTextSosMessage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -134,14 +138,18 @@ class Settings : AppCompatActivity() {
         })
     }
 
+
+    // 데이터베이스 초기화
     private fun initializeDatabase() {
         contactsDAO = ContactsDAO(this, loginID)
     }
 
+    // SharedPreferences 초기화
     private fun initializePreferences() {
         sharedPreferences = getSharedPreferences("SettingsPrefs", Context.MODE_PRIVATE)
     }
 
+    // UI 리스너 설정
     private fun setupUIListeners() {
         setOptionMenuBtn.setOnClickListener { showPopupMenu(it) }
         applyButton.setOnClickListener { saveRadioButtonState() }
@@ -154,6 +162,7 @@ class Settings : AppCompatActivity() {
         logoutButton.setOnClickListener { logout() }
     }
 
+    // 데이터 로드
     private fun loadData() {
         updateContactList()
         loadRadioButtonState()
@@ -161,6 +170,7 @@ class Settings : AppCompatActivity() {
         setupSpinner()
     }
 
+    //메뉴옵션바 설정
     private fun showPopupMenu(view: View) {
         val popup = PopupMenu(this, view)
         popup.menuInflater.inflate(R.menu.menu_settings, popup.menu)
@@ -180,6 +190,7 @@ class Settings : AppCompatActivity() {
         popup.show()
     }
 
+    //데이터 가져와서 Layout에 보이게 하기
     private fun updateContactList() {
         contactListLayout.removeAllViews()
         val contacts = contactsDAO.getContactsById()
@@ -193,6 +204,7 @@ class Settings : AppCompatActivity() {
         }
     }
 
+    //전화번호 DB에 추가하기
     private fun addContact() {
         val phone = editTextContact.text.toString().trim()
 
@@ -215,9 +227,10 @@ class Settings : AppCompatActivity() {
             Toast.makeText(this, "연락처를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
     }
-
+    //전화번호 DB에서 삭제하기
     private fun deleteContact() {
         val phone = editTextContact.text.toString()
+        //전화번호 DB에 있는지 확인 및 빈칸인지 확인
         if (phone.isNotEmpty()) {
             val rowsDeleted = contactsDAO.deleteContact(phone)
             if (rowsDeleted > 0) {
@@ -230,6 +243,7 @@ class Settings : AppCompatActivity() {
         }
     }
 
+    // 사용자가 선택한 라디오 버튼의 ID를 SharedPreferences에 저장
     private fun saveRadioButtonState() {
         val selectedId = radioGroup.checkedRadioButtonId
         sharedPreferences.edit()
@@ -237,6 +251,7 @@ class Settings : AppCompatActivity() {
             .apply()
     }
 
+    // 저장된 라디오 버튼의 선택 상태를 로드하여 해당 버튼을 선택 상태로 설정
     private fun loadRadioButtonState() {
         val savedId = sharedPreferences.getInt("selected_siren", R.id.radio_siren1)
         if (savedId != -1) {
@@ -244,11 +259,13 @@ class Settings : AppCompatActivity() {
         }
     }
 
+    // 현재 선택된 라디오 버튼에 따라 사이렌 소리를 재생하고, 선택된 사이렌 유형을 Toast로 표시
     private fun testSelectedSiren() {
         val selectedId = radioGroup.checkedRadioButtonId
         val selectedRadioButton = findViewById<RadioButton>(selectedId)
         val sirenText = selectedRadioButton?.text.toString()
 
+        // 선택된 라디오 버튼에 대응하는 사이렌 소리 설정 ( 없으면 종료 )
         val sirenType = when (selectedId) {
             R.id.radio_siren1 -> R.raw.police_siren
             R.id.radio_siren2 -> R.raw.civil_defense_siren
@@ -260,7 +277,7 @@ class Settings : AppCompatActivity() {
         mediaPlayer?.release()
         val mediaPlayer = MediaPlayer.create(this, sirenType)
         mediaPlayer?.let { mp ->
-            try {
+            try {// 사이렌 소리 3초간 재생
                 mp.start()
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (mp.isPlaying) {
@@ -276,12 +293,14 @@ class Settings : AppCompatActivity() {
         Toast.makeText(this, "현재 사이렌 소리: $sirenText", Toast.LENGTH_SHORT).show()
     }
 
+    // 스피너를 설정하고, 저장된 값이 있으면 해당 선택 항목을 설정
     private fun setupSpinner() {
         val frequencies = listOf("1분", "2분", "3분", "4분", "5분")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, frequencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
+        // 저장된 스피너 선택 항목 불러오기
         val savedSelection = sharedPreferences.getString("spinner_selection", "1분")
         savedSelection?.let {
             val position = adapter.getPosition(it)
@@ -289,12 +308,15 @@ class Settings : AppCompatActivity() {
         }
     }
 
+    // 스피너에서 선택된 항목을 SharedPreferences에 저장
     private fun saveSpinnerSelection(selection: String) {
         sharedPreferences.edit()
             .putString("spinner_selection", selection)
             .apply()
     }
 
+
+    // SOS 메시지를 초기화하고, 기본 메시지를 TextView와 EditText에 설정
     private fun resetSosMessage() {
         val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
         sosMessageTextView.text = defaultMessage
@@ -304,6 +326,7 @@ class Settings : AppCompatActivity() {
             .apply()
     }
 
+    // SOS 메시지 수정 모드를 토글하고, 버튼과 텍스트 필드의 가시성을 변경
     private fun toggleEditMode() {
         if (isEditing) {
             sosMessageTextView.visibility = View.VISIBLE
@@ -322,6 +345,7 @@ class Settings : AppCompatActivity() {
         isEditing = !isEditing
     }
 
+    // 새로운 SOS 메시지를 저장하고, 수정 모드를 종료
     private fun saveSosMessage() {
         val newMessage = editTextSosMessage.text.toString()
         if (newMessage.isNotBlank()) {
@@ -336,6 +360,7 @@ class Settings : AppCompatActivity() {
         }
     }
 
+    // 저장된 SOS 메시지를 불러와서 TextView와 EditText에 설정
     private fun loadSosMessage() {
         val defaultMessage = "SOS 메시지 : 지금 사용자가 위험한 상황이에요. 도와주세요!"
         val savedMessage = sharedPreferences.getString("sos_message", defaultMessage)
@@ -343,6 +368,7 @@ class Settings : AppCompatActivity() {
         editTextSosMessage.setText(savedMessage)
     }
 
+    // 로그아웃 시 사용자 로그인 정보 제거하고 로그인 화면으로 이동
     private fun logout() {
         val prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         prefs.edit().remove("LOGIN_ID").apply()

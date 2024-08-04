@@ -17,6 +17,7 @@ class SendMessage(private val context: Context, private val loginID: String) {
 
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
+    // 현재 위치 정보 가져오기
     fun sendLocationSMS() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation
@@ -31,10 +32,10 @@ class SendMessage(private val context: Context, private val loginID: String) {
             Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
-
+    // 위치 정보를 포함한 SMS 전송
     private fun sendSMS(location: Location) {
         val dao = ContactsDAO(context, loginID)
-        val contacts = dao.getContactsById()
+        val contacts = dao.getContactsById() // ID가 일치할때에 연락처 가져오기
 
         // SharedPreferences에서 커스텀 메시지를 불러오기
         val sharedPreferences: SharedPreferences = context.getSharedPreferences("SettingsPrefs", Context.MODE_PRIVATE)
@@ -42,6 +43,7 @@ class SendMessage(private val context: Context, private val loginID: String) {
 
         val message = "현재 위치: https://maps.google.com/?q=${location.latitude},${location.longitude}"
 
+        // SMS 권한 확인
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             try {
                 val smsManager = SmsManager.getDefault()

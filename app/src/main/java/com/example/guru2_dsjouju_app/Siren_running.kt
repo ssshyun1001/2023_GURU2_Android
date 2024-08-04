@@ -36,19 +36,16 @@ class Siren_running : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_siren_running)
 
-        // 로그인 ID를 인텐트에서 추출하여 초기화
+        // 로그인 ID 및 SharedPreferences 초기화
         loginID = intent.getStringExtra("LOGIN_ID") ?: ""
-
-        // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE)
 
+        // UI 요소 초기화
         sosButton = findViewById(R.id.sosButton)
-
         sosManager = SosManager(this, sosButton, loginID)
-
-        // Application 클래스 인스턴스 얻기
         sosIsRunning = application as SosIsRunning
 
+        // SOS 버튼 이벤트 리스너 설정
         sosButton.setOnClickListener { sosManager.showSosDialog() }
         sosButton.setOnLongClickListener {
             sosManager.handleLongPress()
@@ -59,15 +56,14 @@ class Siren_running : AppCompatActivity() {
         // 오디오 매니저 초기화
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
+        // 사이렌 다이얼로그 표시 및 SOS 버튼 이미지 업데이트
         showSirenDialog()
-
         sosManager.updateSosButtonImage()
 
         // 사이렌 시작 버튼 초기화
         val toggleSirenButton: ImageButton = findViewById(R.id.toggleSirenButton)
         toggleSirenButton.setOnClickListener {
             if (mediaPlayer == null) {
-                // 사이렌 소리 시작
                 startSiren()
             } else {
                 Toast.makeText(this, "사이렌 소리가 이미 시작되었습니다.", Toast.LENGTH_SHORT).show()
@@ -75,6 +71,7 @@ class Siren_running : AppCompatActivity() {
         }
     }
 
+    // 사이렌 시작 다이얼로그 표시
     fun showSirenDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("사이렌을 시작하려면 확인 버튼을 누르세요.")
@@ -92,6 +89,7 @@ class Siren_running : AppCompatActivity() {
         val alert = builder.create()
         alert.show()
 
+        // 3초 후 사이렌 자동 시작
         countdownTimer = object : CountDownTimer(3300, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 alert.setMessage("3초 후 사이렌이 실행됩니다.\n자동 시작까지 ${millisUntilFinished / 1000}초 남았습니다.")
@@ -104,6 +102,7 @@ class Siren_running : AppCompatActivity() {
         }.start()
     }
 
+    // 사이렌 시작
     private fun startSiren() {
         val selectedSirenId = sharedPreferences.getInt("selected_siren", R.id.radio_siren1)
         val soundResId = when (selectedSirenId) {
@@ -121,6 +120,7 @@ class Siren_running : AppCompatActivity() {
             AudioManager.AUDIOFOCUS_GAIN
         )
 
+        // 오디오 포커스 요청 및 사이렌 소리 재생
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             mediaPlayer = (MediaPlayer.create(this, soundResId)?.apply {
                 setVolume(1.0f, 1.0f)
@@ -133,6 +133,7 @@ class Siren_running : AppCompatActivity() {
             Toast.makeText(this, "오디오 포커스를 얻지 못했습니다.", Toast.LENGTH_SHORT).show()
         }
 
+        // 사이렌 정지 버튼 이벤트 리스너 설정
         val togglesirenButton: ImageButton = findViewById(R.id.toggleSirenButton)
         togglesirenButton.setOnLongClickListener {
             isButtonPressed = true
@@ -150,6 +151,7 @@ class Siren_running : AppCompatActivity() {
         }
     }
 
+    // 사이렌 정지 및 이전 화면으로 복귀
     private fun stopSirenAndReturnToPrevious() {
         mediaPlayer?.apply {
             if (isPlaying) {
