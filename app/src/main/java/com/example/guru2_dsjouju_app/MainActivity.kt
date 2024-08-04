@@ -4,9 +4,12 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -23,8 +26,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlay
@@ -38,6 +43,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -112,9 +118,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val showConvenienceStores: Button = findViewById(R.id.convenientStore)
         val showCctvs: Button = findViewById(R.id.cctv)
 
-        showPoliceStations.setOnClickListener { showMarkers(policeMarkers) }
-        showCctvs.setOnClickListener { showMarkers(cctvMarkers) }
-        showConvenienceStores.setOnClickListener { showMarkers(convenienceStoreMarkers) }
+        showPoliceStations.setOnClickListener { showMarkers("police") }
+        showConvenienceStores.setOnClickListener { showMarkers("convenience") }
+        showCctvs.setOnClickListener { showMarkers("cctv") }
 
         // Coroutine을 사용하여 긴 작업을 백그라운드에서 수행
         coroutineScope.launch {
@@ -194,7 +200,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 12.0f))
         addPoliceStationMarkers()
         loadCctvData()
-        addConvenienceStoresMarker()
+        showNearbyConvenienceStores()
         createHeatmap(seoul)
     }
 
@@ -245,8 +251,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    private var currentLatLng: LatLng? = null
-
     private fun getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -263,95 +267,97 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    data class ConvenienceStore(val name: String, val latitude: Double, val longitude: Double)
-
-    private fun addConvenienceStoresMarker() {
+    private fun loadNearbyConvenienceStoreData(currentLatLng: LatLng, radius: Double): List<LatLng> {
+        val nearbyConvenienceStores = mutableListOf<LatLng>()
         try {
-            val inputStreamReader = InputStreamReader(assets.open("convenienceStores_data.json"))
-            val jsonReader = JsonReader(inputStreamReader)
-
-            val convenienceStores = mutableListOf<ConvenienceStore>()
-
+            val inputStream = assets.open("convenienceStores_data.json")
+            val jsonReader = JsonReader(InputStreamReader(inputStream, "UTF-8"))
             jsonReader.beginArray()
 
             while (jsonReader.hasNext()) {
                 jsonReader.beginObject()
-                var name = ""
-                var latStr = ""
-                var lonStr = ""
+                var lat: Double? = null
+                var lng: Double? = null
 
                 while (jsonReader.hasNext()) {
                     when (jsonReader.nextName()) {
-                        "상호명" -> name = jsonReader.nextString()
-                        "위도" -> latStr = jsonReader.nextString()
-                        "경도" -> lonStr = jsonReader.nextString()
+                        "위도" -> {
+                            val latString = jsonReader.nextString()
+                            lat = if (latString.isNotEmpty()) latString.toDoubleOrNull() else null
+                        }
+                        "경도" -> {
+                            val lngString = jsonReader.nextString()
+                            lng = if (lngString.isNotEmpty()) lngString.toDoubleOrNull() else null
+                        }
                         else -> jsonReader.skipValue()
                     }
                 }
                 jsonReader.endObject()
-
-                // Check if latStr and lonStr are not empty
-                val lat = latStr.toDoubleOrNull()
-                val lon = lonStr.toDoubleOrNull()
-
-                if (lat != null && lon != null) {
-                    val convenienceLatLng = LatLng(lat, lon)
-
-                    // 현재 위치와 편의점 간 거리 계산
-                    val distance = currentLatLng?.let { calculateDistance(it, convenienceLatLng) }
-
-                    // 5km 이내의 편의점만 마커로 추가
-                    if (distance != null && distance <= 5.0) {
-                        mMap.addMarker(
-                            MarkerOptions()
-                                .position(convenienceLatLng)
-                                .title(name)
-                                .icon(
-                                    BitmapDescriptorFactory.fromBitmap(
-                                        createCustomMarkerBitmap()
-                                    )
-                                )
-                        )
+                if (lat != null && lng != null) {
+                    val storeLatLng = LatLng(lat, lng)
+                    if (isWithinRadius(currentLatLng, storeLatLng, radius)) {
+                        nearbyConvenienceStores.add(storeLatLng)
                     }
                 }
             }
-
             jsonReader.endArray()
             jsonReader.close()
-        } catch (e: Exception) {
-            Log.e("JSON_DEBUG", "Error reading JSON data", e)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        Log.d("MainActivity", "Loaded ${nearbyConvenienceStores.size} nearby convenience stores")
+        return nearbyConvenienceStores
+    }
+
+
+    private fun isWithinRadius(currentLatLng: LatLng, storeLatLng: LatLng, radius: Double): Boolean {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            currentLatLng.latitude, currentLatLng.longitude,
+            storeLatLng.latitude, storeLatLng.longitude,
+            results
+        )
+        return results[0] <= radius
+    }
+
+
+    private fun showNearbyConvenienceStores() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            location?.let {
+                val currentLatLng = LatLng(it.latitude, it.longitude)
+                val nearbyConvenienceStores = loadNearbyConvenienceStoreData(currentLatLng, 5000.0)
+
+                for (store in nearbyConvenienceStores) {
+                    val markerOptions = MarkerOptions()
+                        .position(store)
+                        .title("편의점")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    val marker = mMap.addMarker(markerOptions)
+                    marker?.let { convenienceStoreMarkers.add(it) }
+                }
+            }
         }
     }
 
-
-    // 두 지점 간 거리 계산 (킬로미터 단위)
-    private fun calculateDistance(latLng1: LatLng, latLng2: LatLng): Double {
-        val earthRadius = 6371 // 지구 반지름 (킬로미터)
-        val dLat = Math.toRadians(latLng2.latitude - latLng1.latitude)
-        val dLng = Math.toRadians(latLng2.longitude - latLng1.longitude)
-        val a = Math.sin(dLat / 2).pow(2.0) +
-                Math.cos(Math.toRadians(latLng1.latitude)) * Math.cos(Math.toRadians(latLng2.latitude)) *
-                Math.sin(dLng / 2).pow(2.0)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        return earthRadius * c
-    }
-
-    private fun createCustomMarkerBitmap(): Bitmap {
-        val width = 60 // Desired width of the marker
-        val height = 60 // Desired height of the marker
-
-        // Create a Bitmap object and canvas to draw on it
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-
-        // Draw a blue circle as a marker
-        val paint = Paint()
-        paint.color = Color.BLUE // Blue color
-        paint.isAntiAlias = true
-        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), (width / 2).toFloat(), paint)
-
-        return bitmap
-    }
 
     private fun loadCctvData(): List<LatLng> {
         val cctvs = mutableListOf<LatLng>()
@@ -375,8 +381,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return cctvs
     }
 
-    private fun showMarkers(markers: List<Marker>) {
-        markers.forEach { it.isVisible = true }
+    private fun showMarkers(type: String) {
+        // 모든 마커를 숨깁니다.
+        policeMarkers.forEach { it.isVisible = false }
+        convenienceStoreMarkers.forEach { it.isVisible = false }
+        cctvMarkers.forEach { it.isVisible = false }
+
+        // 히트맵을 숨기거나 보이게 합니다.
+        heatmapTileOverlay?.isVisible = false
+
+        // 선택된 유형의 마커만 보이게 합니다.
+        when (type) {
+            "police" -> {
+                policeMarkers.forEach { it.isVisible = true }
+                // 경찰서 마커만 보이고 히트맵도 보이게 할 경우, 히트맵은 숨깁니다.
+                heatmapTileOverlay?.isVisible = false
+            }
+            "convenience" -> {
+                convenienceStoreMarkers.forEach { it.isVisible = true }
+                // 히트맵을 보이게 할지 결정합니다. (현재 히트맵 보이도록 설정)
+                heatmapTileOverlay?.isVisible = false
+                policeMarkers.forEach { it.isVisible = false }
+            }
+            "cctv" -> {
+                heatmapTileOverlay?.isVisible = true
+                policeMarkers.forEach { it.isVisible = false }
+                convenienceStoreMarkers.forEach { it.isVisible = false }
+            }
+        }
     }
 
     private fun createHeatmap(currentLocation: LatLng) {
@@ -480,9 +512,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 // 긴 작업을 백그라운드 스레드에서 수행
-                delay(2000)
+                delay(3000)
                 loadCctvData()
-                addConvenienceStoresMarker()
+                showNearbyConvenienceStores()
             }
         }
     }
