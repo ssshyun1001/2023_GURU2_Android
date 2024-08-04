@@ -100,7 +100,7 @@ class Call_activity : AppCompatActivity() {
             finish() // 현재 activity를 종료합니다.
         }
     }
-
+    // 타이머 업데이트 (run 메서드에서 경과시간 계산)
     private val timerRunnable = object : Runnable {
         override fun run() {
             val elapsedMillis = SystemClock.elapsedRealtime() - startTime
@@ -108,7 +108,7 @@ class Call_activity : AppCompatActivity() {
             val minutes = (elapsedMillis / (1000 * 60)) % 60
             val hours = (elapsedMillis / (1000 * 60 * 60)) % 24
             timerTextView.text = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
-            handler.postDelayed(this, 1000)
+            handler.postDelayed(this, 1000) // 1초 후에 다시 실행
         }
     }
 }
