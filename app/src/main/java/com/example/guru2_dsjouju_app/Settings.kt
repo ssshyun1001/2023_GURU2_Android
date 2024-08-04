@@ -46,6 +46,9 @@ class Settings : AppCompatActivity() {
 
     private lateinit var loginID: String
 
+    // MediaPlayer 인스턴스를 클래스의 멤버로 선언
+    private var mediaPlayer: MediaPlayer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -254,15 +257,20 @@ class Settings : AppCompatActivity() {
         }
 
         // MediaPlayer를 사용하여 사이렌 소리 재생
+        mediaPlayer?.release()
         val mediaPlayer = MediaPlayer.create(this, sirenType)
-        try {
-            mediaPlayer.start()
-            Handler(Looper.getMainLooper()).postDelayed({
-                mediaPlayer.stop()
-                mediaPlayer.release()
-            }, 3000)
-        } finally {
-            mediaPlayer.release()
+        mediaPlayer?.let { mp ->
+            try {
+                mp.start()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (mp.isPlaying) {
+                        mp.stop()
+                    }
+                    mp.release()
+                }, 3000)
+            } catch (e: IllegalStateException) {
+                e.printStackTrace()
+            }
         }
 
         Toast.makeText(this, "현재 사이렌 소리: $sirenText", Toast.LENGTH_SHORT).show()

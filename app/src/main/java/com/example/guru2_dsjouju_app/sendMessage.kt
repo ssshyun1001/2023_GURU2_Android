@@ -16,7 +16,6 @@ import android.util.Log
 class SendMessage(private val context: Context, private val loginID: String) {
 
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-    private lateinit var sosIsRunning: SosIsRunning
 
     fun sendLocationSMS() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {

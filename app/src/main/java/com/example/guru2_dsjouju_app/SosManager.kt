@@ -60,7 +60,7 @@ class SosManager(private val context: Context, private val sosButton: ImageButto
 
     private fun startSos() {
         sos.isSosRunning = true
-        sosButton.setImageResource(R.drawable.app_icon_sos_o) // 아이콘 변경 (적절한 아이콘으로 대체)
+        sosButton.setImageResource(R.drawable.app_icon_sos_o)
         Toast.makeText(context, "SOS 도움 요청이 시작되었습니다", Toast.LENGTH_LONG).show()
 
         startPeriodicMessage()
