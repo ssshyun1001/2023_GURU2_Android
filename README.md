@@ -9,9 +9,9 @@
 
 <br>
 
-![Video Label](http://img.youtube.com/vi/iQmkeTI_iS4/0.jpg)
+![Video Label](http://img.youtube.com/vi/VS67vxgCh0k/0.jpg)
 
-- [어플리케이션 유튜브 링크](https://youtu.be/iQmkeTI_iS4)
+- [어플리케이션 유튜브 링크](https://youtu.be/VS67vxgCh0k)
 
 <br>
 
@@ -25,7 +25,7 @@
 
 ## How to build
 
-1. (apk 다운로드 링크 미구현)
+1. 
 
 <br>
 <br>
@@ -38,6 +38,22 @@
 <br>
 
 ## Changelog
+- <code>2024/08/03</code>
+
+  SOS 상태(On/Off) 액티비티 간 공유
+
+  편의점 마커 생성 및 버튼 연동
+
+  메인 버튼 연동 최종 완료
+
+  사이렌 테스트 버튼 오류 수정
+
+  코드 정리 및 주석 추가
+
+  튜토리얼 png 파일 업로드 완료!!!
+
+<br>
+
 - <code>2024/08/03</code>
 
   Main에 Map 코드 통합 완료
