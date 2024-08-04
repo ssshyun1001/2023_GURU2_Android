@@ -38,7 +38,7 @@
 <br>
 
 ## Changelog
-- <code>2024/08/03</code>
+- <code>2024/08/04</code>
 
   SOS 상태(On/Off) 액티비티 간 공유
 
