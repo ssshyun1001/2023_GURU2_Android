@@ -78,6 +78,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
+    private var isPoliceMarkersVisible = false
+    private var isConvenienceMarkersVisible = false
+    private var isCctvMarkersVisible = false
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -242,12 +247,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         )
 
         for (station in policeStations) {
-            mMap.addMarker(
+            val marker = mMap.addMarker(
                 MarkerOptions()
                     .position(LatLng(station.latitude, station.longitude))
                     .title(station.name)
                     .snippet(station.address)
             )
+            marker?.let { policeMarkers.add(it) }
         }
     }
 
@@ -382,34 +388,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun showMarkers(type: String) {
-        // 모든 마커를 숨깁니다.
-        policeMarkers.forEach { it.isVisible = false }
-        convenienceStoreMarkers.forEach { it.isVisible = false }
-        cctvMarkers.forEach { it.isVisible = false }
-
-        // 히트맵을 숨기거나 보이게 합니다.
-        heatmapTileOverlay?.isVisible = false
-
-        // 선택된 유형의 마커만 보이게 합니다.
         when (type) {
             "police" -> {
-                policeMarkers.forEach { it.isVisible = true }
-                // 경찰서 마커만 보이고 히트맵도 보이게 할 경우, 히트맵은 숨깁니다.
-                heatmapTileOverlay?.isVisible = false
+                isPoliceMarkersVisible = !isPoliceMarkersVisible
+                policeMarkers.forEach { it.isVisible = isPoliceMarkersVisible }
             }
             "convenience" -> {
-                convenienceStoreMarkers.forEach { it.isVisible = true }
-                // 히트맵을 보이게 할지 결정합니다. (현재 히트맵 보이도록 설정)
-                heatmapTileOverlay?.isVisible = false
-                policeMarkers.forEach { it.isVisible = false }
+                isConvenienceMarkersVisible = !isConvenienceMarkersVisible
+                convenienceStoreMarkers.forEach { it.isVisible = isConvenienceMarkersVisible }
             }
             "cctv" -> {
-                heatmapTileOverlay?.isVisible = true
-                policeMarkers.forEach { it.isVisible = false }
-                convenienceStoreMarkers.forEach { it.isVisible = false }
+                isCctvMarkersVisible = !isCctvMarkersVisible
+                heatmapTileOverlay?.isVisible = isCctvMarkersVisible
             }
         }
     }
+
 
     private fun createHeatmap(currentLocation: LatLng) {
         val data = loadCctvData() // CCTV 데이터 로드
