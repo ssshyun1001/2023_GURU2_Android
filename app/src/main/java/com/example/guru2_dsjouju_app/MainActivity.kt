@@ -1,15 +1,9 @@
 package com.example.guru2_dsjouju_app
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -26,10 +20,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlay
@@ -43,12 +35,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStreamReader
-import kotlin.math.pow
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -68,11 +58,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    //private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
 
     private val policeMarkers = mutableListOf<Marker>()
     private val convenienceStoreMarkers = mutableListOf<Marker>()
-    private val cctvMarkers = mutableListOf<Marker>()
 
     private var heatmapTileOverlay: TileOverlay? = null
 
@@ -183,7 +171,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
 
             if (allPermissionsGranted) {
-                // Initialize the map
+                // 지도 초기화
                 val mapFragment =
                     supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
                 mapFragment?.getMapAsync(this)
@@ -191,8 +179,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    //data class Cctv(val name: String, val address: String, val latitude: Double, val longitude: Double)
-
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setOnMarkerClickListener(this)
@@ -209,6 +196,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         createHeatmap(seoul)
     }
 
+    data class PoliceStation(
+        val name: String,
+        val address: String,
+        val latitude: Double,
+        val longitude: Double
+    )
 
     private fun addPoliceStationMarkers() {
         val policeStations = listOf(
@@ -301,6 +294,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 jsonReader.endObject()
                 if (lat != null && lng != null) {
                     val storeLatLng = LatLng(lat, lng)
+                    // 현재 위치로부터 지정된 반경 내에 있는지 확인
                     if (isWithinRadius(currentLatLng, storeLatLng, radius)) {
                         nearbyConvenienceStores.add(storeLatLng)
                     }
@@ -317,7 +311,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return nearbyConvenienceStores
     }
 
-
+    // 두 지점 사이의 거리를 계산하여 주어진 반경 내에 있는지 확인
     private fun isWithinRadius(currentLatLng: LatLng, storeLatLng: LatLng, radius: Double): Boolean {
         val results = FloatArray(1)
         Location.distanceBetween(
@@ -364,7 +358,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-
     private fun loadCctvData(): List<LatLng> {
         val cctvs = mutableListOf<LatLng>()
         try {
@@ -388,6 +381,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun showMarkers(type: String) {
+        //마커 타입에 따라 가시성을 토글
         when (type) {
             "police" -> {
                 isPoliceMarkersVisible = !isPoliceMarkersVisible
@@ -426,12 +420,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             WeightedLatLng(LatLng(it.latitude, it.longitude), 1.0)
         }
 
-        // weightedLatLngs가 비어 있는지 확인 ( 서현 : 제가 개인적으로 돌리다가 오류나서 추가했습니다 )
+        // weightedLatLngs가 비어 있는지 확인
         if (weightedLatLngs.isEmpty()) {
             Log.e("Heatmap", "No input points provided for heatmap. Aborting creation.")
             return
         }
-        // 여기 세줄 추가했습니다.
 
         // HeatmapTileProvider 생성
         val provider = HeatmapTileProvider.Builder()
@@ -497,11 +490,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return false
     }
 
-    data class NearbyPlacesResponse(val results: List<Place>)
-    data class Place(val name: String, val geometry: Geometry)
-    data class Geometry(val location: LocationDetails)
-    data class LocationDetails(val lat: Double, val lng: Double)
-
     private fun performLongRunningOperation() {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
@@ -512,6 +500,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         coroutineScope.cancel()
