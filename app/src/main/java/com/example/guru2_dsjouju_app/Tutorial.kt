@@ -20,7 +20,7 @@ class Tutorial : AppCompatActivity() {
     private lateinit var prevButton: Button
     private lateinit var nextButton: Button
     private lateinit var backButton: Button
-    private val images = intArrayOf(R.drawable.t_example_01, R.drawable.t_example_02, R.drawable.t_example_03, R.drawable.t_example_04, R.drawable.t_example_05)
+    private val images = intArrayOf(R.drawable.tutorial_1, R.drawable.tutorial_2, R.drawable.tutorial_3, R.drawable.tutorial_4, R.drawable.tutorial_5)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
